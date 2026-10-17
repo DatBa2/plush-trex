@@ -2809,7 +2809,7 @@ scene.add(teeth);
 // ------------------------------------------------------------------ cute details + accessories
 const deco = { worn: new Set(), live: [], blush: 0.36, t: 0, items: {}, tag: null };
 const _da = new THREE.Vector3(), _db = new THREE.Vector3(), _dc = new THREE.Vector3(), _dd = new THREE.Vector3(), _de = new THREE.Vector3(), _df = new THREE.Vector3();
-const _dq = new THREE.Quaternion(), _dq2 = new THREE.Quaternion(), _dq3 = new THREE.Quaternion(), Q_ID = new THREE.Quaternion(), ONE3 = new THREE.Vector3(1, 1, 1), _dg = new THREE.Vector3();
+const _dq = new THREE.Quaternion(), _dq2 = new THREE.Quaternion(), _dq3 = new THREE.Quaternion(), Q_ID = new THREE.Quaternion(), ONE3 = new THREE.Vector3(1, 1, 1), _dg = new THREE.Vector3(), _ds = new THREE.Vector3();
 const M4 = () => new THREE.Matrix4();
 const V3 = (a) => new THREE.Vector3(...a);
 const CREAM = '#fff6e8';
@@ -2894,8 +2894,9 @@ const ACC_ANCHORS = {
     beanie: { c: [0, 0.66, 0], ray: [0.28, 0.17, 0.02, 0.28], apex: [0, 1.06, 0], top: [0, 0.7, 0] },
     phones: { c: [-0.07, 0.66, 0], cup: [0, 0.66, 0], span: 1.2, top: [0, 0.7, 0], s: 1.35 },
     glasses: { R: 0.052, arch: 0.008, top: [0.2, 0.7, 0] },
-    bandana: { c: [0, 0.295, 0], a: [0, 1, 0], f: [1, 0], w: 0.02, r: [0.47, 0.45], H: 0.075, span: 0.75 },
-    bowtie: { at: [0.1, 0.3, 0], dir: [1, 0, 0], s: 1.35 },
+    bandana: { c: [0, 0.295, 0], a: [0, 1, 0], f: [1, 0], w: 0.02, r: [0.47, 0.45], H: 0.075, span: 0.75, jaw: true },
+    // hàm trứng xoay quanh khớp xa (trọng số hàm trải xuống tận đáy): vạt khăn cổ và nơ cổ dưới miệng phải há theo hàm
+    bowtie: { at: [0.1, 0.3, 0], dir: [1, 0, 0], s: 1.35, jaw: true },
     backpack: { o: [-0.1, 0.5, 0.03], dir: [-1, 0.2, 0.42], strap: [0, 0.5, 0], D: [[-0.8, 0.55, 0.3], [-0.35, 0.55, 0.85], [-0.2, 0.05, 1], [-0.25, -0.4, 0.9]], ridge: [1.0, 0.3], top: [-0.2, 0.5, 0], s: 1.3 },
     drumstick: { at: [0, 0.7, 0], dir: [0, 1, 0], up: () => [0.05, 1, 0], yaw: 1.25, s: 1.5 },
     tag: { at: [0, 0.3, 0], dir: [-1, -0.25, 0.3] },
@@ -3025,7 +3026,7 @@ function addPiece(key, geo, at, { q = new THREE.Quaternion(), frame = 'head', up
   const mesh = new THREE.Mesh(geo, mat);
   mesh.matrixAutoUpdate = false; mesh.visible = false;
   scene.add(mesh);
-  (deco.items[key] ||= []).push({ mesh, q, frame, b: bindPoint(at), up: V3(up).normalize(), n: V3(n).normalize(), w: makeWobble(...wob), kick: 0, bob, jw: jaw ? jawAt(at) : 0 });
+  (deco.items[key] ||= []).push({ key, mesh, q, frame, b: bindPoint(at), up: V3(up).normalize(), n: V3(n).normalize(), w: makeWobble(...wob), kick: 0, bob, jw: jaw ? jawAt(at) : 0 });
 }
 // dây đeo vắt từ lưng xuống ngực: thân giãn mạnh khi bị xách đuôi nên mỗi đỉnh bám lưới riêng thay vì theo một ma trận
 function addSkin(key, geo, jaw = false) {
@@ -3246,7 +3247,7 @@ addAcc('horn', (() => {
   flap.setAttribute('position', new THREE.Float32BufferAttribute(P, 3));
   flap.setIndex(I);
   flap.computeVertexNormals();
-  addPiece('bandana', mergeGeos([[flap, null, '#ffffff', 3]]), A, { frame: 'neck', up: [apex[0] - A[0], apex[1] - A[1], 0], n: s0.n, wob: [H, 9, 0.22, 0.5, 2.5, 0.35] });
+  addPiece('bandana', mergeGeos([[flap, null, '#ffffff', 3]]), A, { frame: 'neck', up: [apex[0] - A[0], apex[1] - A[1], 0], n: s0.n, wob: [H, 9, 0.22, 0.5, 2.5, 0.35], jaw: F.jaw });
 }
 
 // nơ cổ: một khối cầu bóp eo ở giữa thành hai cánh, chấm bi kem + nút thắt
@@ -3424,7 +3425,9 @@ addAcc('drumstick', (() => {
   parts.push([new THREE.TorusGeometry(0.0115, 0.0032, 8, 24).rotateX(Math.PI / 2), M4().makeTranslation(0, 0.004, 0), '#d8b585', 0], [new THREE.TorusGeometry(0.0118, 0.0032, 8, 24).rotateX(Math.PI / 2), M4().makeTranslation(0, -0.004, 0), '#d8b585', 0]);
   const g = mergeGeos(parts).scale(k, k, k);
   // bàn tay tròn (vịt) cho sẵn điểm nắm `at` trong lòng bàn tay: cuống hoa xuyên qua tay như đang nắm
-  const n = V3([mn[hv * 3], mn[hv * 3 + 1], mn[hv * 3 + 2]]), at = F.at ? V3(F.at) : V3([mp[hv * 3], mp[hv * 3 + 1], mp[hv * 3 + 2]]).addScaledVector(n, 0.012 * k);
+  // không có trọng số rig tay (tay trứng là ống riêng, khung bàn tay ET.arms) thì neo tạm ở vai: vị trí thật đặt lại mỗi khung trong placeAcc
+  const n = hv < 0 ? V3([1, 0, 0]) : V3([mn[hv * 3], mn[hv * 3 + 1], mn[hv * 3 + 2]]);
+  const at = F.at ? V3(F.at) : hv < 0 ? V3(LM.shoulder) : V3([mp[hv * 3], mp[hv * 3 + 1], mp[hv * 3 + 2]]).addScaledVector(n, 0.012 * k);
   const up = V3([0.2, 1, 0.35]).normalize();
   addPiece('bouquet', g, at.toArray(), { frame: 'hand', q: new THREE.Quaternion().setFromUnitVectors(Y_AXIS, up), up: up.toArray(), wob: [0.1 * k, 10, 0.2, 0.35, 0.8, 0.25] });
 }
@@ -3483,21 +3486,40 @@ function updateDeco() {
       p.needsUpdate = true; n.needsUpdate = true;
       continue;
     }
-    // vạt khăn/nơ cổ nằm ở cổ họng: nửa theo ngực, nửa theo đầu; món cầm tay đi theo tay quanh vai như trong shader
-    // nhưng cổ tay bù lại, chỉ nghiêng ~40% góc tay: giơ tay lên mặt (khóc, dụi mắt) hoa vẫn chĩa lên chứ không đâm vào mặt
-    let fq = it.frame === 'head' ? frames.head : it.frame === 'chest' ? frames.chest : it.frame === 'hand' ? _dq2.setFromRotationMatrix(rot.armR).slerp(Q_ID, 0.6).multiply(frames.chest) : _dq2.copy(frames.chest).slerp(frames.head, 0.5);
-    skinBound(it.b, _da);
-    if (it.frame === 'hand') _da.sub(U.armRPivot.value).applyMatrix4(rot.armR).add(U.armRPivot.value);
-    if (it.jw) { jawRig(_da, it.jw); fq = _dq3.setFromRotationMatrix(rot.jaw).slerp(Q_ID, 1 - it.jw).multiply(fq); }
-    _db.copy(it.up).applyQuaternion(fq);
-    _dc.copy(it.n).applyQuaternion(fq);
-    if (it.kick) { it.kick = 0; wobble(it.w, _da, _db, 0); it.w.u.set(Math.random() - 0.5, 0.2, Math.random() - 0.5).multiplyScalar(it.w.L * 9); }
-    const dir = wobble(it.w, _da, _db, dt, it.frame === 'head' ? null : _dc);
-    _dq.setFromUnitVectors(_db, dir).multiply(fq).multiply(it.q);
-    if (it.bob) _da.addScaledVector(dir, Math.sin(simTime * 2.2) * it.bob);
-    it.mesh.matrix.compose(_da, _dq, ONE3);
-    it.mesh.matrixWorldNeedsUpdate = true;
+    // tay ống của trứng dựng lại trong CHAR.post (sau hàm này): món cầm tay đặt ngay sau etArms (decoHands) cho khỏi trễ một khung
+    if (it.frame !== 'hand' || !ET.arms.length) placeAcc(it, dt);
   }
+}
+function decoHands(dt) { for (const it of deco.live) if (it.frame === 'hand') placeAcc(it, clamp(dt, 0, 0.05)); }
+// trứng dùng tay và đồ vật riêng (ET, phần "egg tricks"): món đụng chúng thì thu nhỏ biến đi trong lúc đó. Trả độ hiện 0..1:
+// bó hoa khi tay phải bận (với tới mắt/mặt/đồ ăn/bóng/đồ vật, ngón cái phóng to), kính khi tay che mặt
+const ACC_FACE = new Set(['eye', 'cover', 'face']), ACC_TALL = new Set(['drumstick', 'hat', 'crown', 'horn', 'bunny', 'halo']);
+function accFade(k) {
+  if (!ET.arms.length) return 1;
+  if (k === 'bouquet') { const A = ET.arms[1]; return 1 - sstep(0.1, 0.4, Math.max(A.w, A.sc - 1)); }
+  if (k === 'glasses' || k === 'shades') { let w = 0; for (const A of ET.arms) if (ACC_FACE.has(A.want.name)) w = Math.max(w, A.w); return 1 - sstep(0.15, 0.45, w); }
+  // đùi gà của trò giận dỗi nằm đúng đỉnh đầu, bát sen thì ngay trên đầu: đồ cao trên đỉnh đầu nhường chỗ
+  if (ACC_TALL.has(k)) return 1 - sstep(0.01, 0.15, Math.max(ET.props.hdrum.s, ET.props.shower.s));
+  return 1;
+}
+function placeAcc(it, dt) {
+  // vạt khăn/nơ cổ nằm ở cổ họng: nửa theo ngực, nửa theo đầu; món cầm tay đi theo tay quanh vai như trong shader
+  // nhưng cổ tay bù lại, chỉ nghiêng ~40% góc tay: giơ tay lên mặt (khóc, dụi mắt) hoa vẫn chĩa lên chứ không đâm vào mặt
+  let fq = it.frame === 'head' ? frames.head : it.frame === 'chest' ? frames.chest : it.frame === 'hand' ? _dq2.setFromRotationMatrix(rot.armR).slerp(Q_ID, 0.6).multiply(frames.chest) : _dq2.copy(frames.chest).slerp(frames.head, 0.5);
+  skinBound(it.b, _da);
+  // trứng: cuống hoa xuyên qua giữa nắm tay phải (tâm nắm +X 0.028 trong khung bàn tay)
+  if (it.frame === 'hand') { if (ET.arms.length) _da.set(0.028 * ET.arms[1].sc, 0, 0).applyMatrix4(ET.arms[1].M); else _da.sub(U.armRPivot.value).applyMatrix4(rot.armR).add(U.armRPivot.value); }
+  if (it.jw) { jawRig(_da, it.jw); fq = _dq3.setFromRotationMatrix(rot.jaw).slerp(Q_ID, 1 - it.jw).multiply(fq); }
+  _db.copy(it.up).applyQuaternion(fq);
+  _dc.copy(it.n).applyQuaternion(fq);
+  if (it.kick) { it.kick = 0; wobble(it.w, _da, _db, 0); it.w.u.set(Math.random() - 0.5, 0.2, Math.random() - 0.5).multiplyScalar(it.w.L * 9); }
+  const dir = wobble(it.w, _da, _db, dt, it.frame === 'head' ? null : _dc);
+  _dq.setFromUnitVectors(_db, dir).multiply(fq).multiply(it.q);
+  if (it.bob) _da.addScaledVector(dir, Math.sin(simTime * 2.2) * it.bob);
+  const f = accFade(it.key);
+  it.mesh.visible = f > 0.01;
+  it.mesh.matrix.compose(_da, _dq, _ds.setScalar(Math.max(f, 1e-3)));
+  it.mesh.matrixWorldNeedsUpdate = true;
 }
 
 const ACC_KEY = `plush-acc-${CHAR.id}`;
@@ -5809,6 +5831,7 @@ function etArms(dt) {
   });
   ET.geo.attributes.position.needsUpdate = true;
   ET.geo.attributes.normal.needsUpdate = true;
+  decoHands(dt);
 }
 function etWrite(a, A, len) {
   const P = ET.pos, Nn = ET.nor, R = ET_ARM.rad, pts = A.pts, T = _ka, N = _kb, Bv = _kc;
