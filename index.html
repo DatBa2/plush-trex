@@ -408,6 +408,7 @@ details code { font-family: ui-monospace, "Cascadia Mono", Menlo, monospace; fon
 .sw-vanilla { background: radial-gradient(circle at 50% 120%, #fff8ea 0 42%, #f3e2c0 43%); }
 .sw-kitty { background: radial-gradient(circle at 50% 120%, #f1eef2 0 42%, #a8a8b4 43%); }
 .sw-strawberry { background: radial-gradient(circle at 50% 120%, #ffe9ec 0 42%, #e8505b 43%); }
+.sw-butter { background: radial-gradient(circle at 50% 120%, #fcf0c4 0 42%, #f9e9a2 43%); }
 .meta { margin: 12px 0 0; font-size: 12.5px; font-weight: 600; color: var(--ink-3); }
 
 @media (max-width: 900px) {
@@ -570,6 +571,7 @@ details code { font-family: ui-monospace, "Cascadia Mono", Menlo, monospace; fon
         <button class="btn fabric" data-fabric="pidan" aria-pressed="false"><i class="swatch sw-pidan"></i>Bắc thảo</button>
         <button class="btn fabric" data-fabric="vanilla" aria-pressed="false"><i class="swatch sw-vanilla"></i>Kem vani</button>
         <button class="btn fabric" data-fabric="kitty" aria-pressed="false"><i class="swatch sw-kitty"></i>Mèo xám</button>
+        <button class="btn fabric" data-fabric="butter" aria-pressed="false"><i class="swatch sw-butter"></i>Bơ sữa</button>
       </div>
     </div>
 
@@ -592,6 +594,10 @@ details code { font-family: ui-monospace, "Cascadia Mono", Menlo, monospace; fon
         <button class="btn fabric acc" data-acc="bandana" aria-pressed="false"><i class="emo" aria-hidden="true">🧣</i>Khăn</button>
         <button class="btn fabric acc" data-acc="bowtie" aria-pressed="false"><i class="emo" aria-hidden="true">🤵</i>Nơ cổ</button>
         <button class="btn fabric acc" data-acc="backpack" aria-pressed="false"><i class="emo" aria-hidden="true">🎒</i>Ba lô</button>
+        <button class="btn fabric acc" data-acc="drumstick" aria-pressed="false"><i class="emo" aria-hidden="true">🍗</i>Đùi gà</button>
+        <button class="btn fabric acc" data-acc="scarf" aria-pressed="false"><i class="emo" aria-hidden="true">🧕</i>Khăn trùm caro</button>
+        <button class="btn fabric acc" data-acc="shades" aria-pressed="false"><i class="emo" aria-hidden="true">🕶️</i>Kính râm hồng</button>
+        <button class="btn fabric acc" data-acc="bouquet" aria-pressed="false"><i class="emo" aria-hidden="true">💐</i>Bó tulip</button>
       </div>
     </div>
 
@@ -930,114 +936,89 @@ function spineProject(sp, x, y, out) {
 }
 
 // ---------------------------------------------------------------- duck
-// Vịt bông: thân giọt nước ngực thấp, đầu to má phúng phính, mỏ dẹt hai nửa, cánh là gối mỏng ôm hông, chân màng
+// Vịt bông kiểu Lalafanfan: đầu tròn to liền thân không thấy cổ, thân quả lê, mỏ dẹt rộng dày như gối, cánh ngắn cũn có bàn tay tròn, chân màng bé xíu
 const DK = {
-  NECK: makeCone([0.08, 0.44, 0], [0.15, 0.63, 0], 0.15, 0.13),
-  TAIL: [makeCone([-0.2, 0.42, 0], [-0.31, 0.5, 0], 0.1, 0.056), makeCone([-0.31, 0.5, 0], [-0.345, 0.585, 0], 0.056, 0.022)],
-  LEG: makeCone([0.05, 0.18, 0.115], [0.06, 0.04, 0.115], 0.036, 0.031),
-  TOES: [-1, 0, 1].map((k) => makeCone([0.07, 0.02, 0.115], [0.198 - Math.abs(k) * 0.014, 0.02, 0.115 + k * 0.056], 0.022, 0.02)),
-  TUFT: [makeCone([0.16, 0.935, 0], [0.18, 1.0, 0], 0.032, 0.024), makeCone([0.18, 1.0, 0], [0.14, 1.037, 0], 0.024, 0.02), makeCone([0.14, 1.037, 0], [0.104, 1.02, 0], 0.02, 0.017), makeCone([0.104, 1.02, 0], [0.104, 0.995, 0], 0.017, 0.016)],
-  CORNER: 0.325, FRONT: 0.52, SLIT: 0.0065, TA: Math.cos(-0.1), TB: Math.sin(-0.1),
-  WING: { x: -0.035, y: 0.385, c: Math.cos(0.2), s: Math.sin(0.2), ru: 0.145, rv: 0.082, T: 0.023, gap: 0.024 },
-  spine: makeSpine([[-0.46, 0.60], [-0.30, 0.44], [-0.10, 0.36], [0.06, 0.34], [0.13, 0.52], [0.16, 0.70], [0.17, 0.80], [0.34, 0.75], [0.53, 0.73]]),
-  PANEL: [[0.3, 0.0], [0.42, 0.075], [0.55, 0.11], [0.68, 0.11], [0.77, 0.075], [0.84, 0.0]],
-  nostril: null,
+  TAIL: makeCone([-0.19, 0.3, 0], [-0.3, 0.37, 0], 0.085, 0.035),
+  LEG: makeCone([0.035, 0.14, 0.105], [0.045, 0.035, 0.105], 0.04, 0.034),
+  TOES: [-1, 0, 1].map((k) => makeCone([0.06, 0.02, 0.105], [0.168 - Math.abs(k) * 0.012, 0.02, 0.105 + k * 0.046], 0.02, 0.018)),
+  // bàn tay tách khỏi hông một khe: dính vào thân thì lúc vỗ cả mảng hông bị kéo rách theo
+  ARM: makeCone([0, 0.43, 0.17], [0.05, 0.355, 0.315], 0.05, 0.042),
+  PAW: [0.056, 0.34, 0.335, 0.05],
+  CORNER: 0.258, FRONT: 0.4, SLIT: 0.0065, SMILE: 0.7,
+  // trục thẳng đứng xuyên thân lên quá đỉnh đầu: trục có chỗ gập thì dải bề mặt ngoài chỗ gập chung một u, lông và normal map bị kéo thành sọc
+  spine: makeSpine([[0.02, 0], [0.02, 1.05]]),
 };
-const duckMouthY = (x) => { const t = clamp((x - DK.CORNER) / (DK.FRONT - DK.CORNER), 0, 1); return 0.702 + 0.014 * (1 - t) * (1 - t); };
+// khe mỏ cong lên về phía gốc (nhìn ngang) và ra hai khoé (nhìn thẳng): mỏ cười
+const duckMouthY = (x, z) => { const t = clamp((x - DK.CORNER) / (DK.FRONT - DK.CORNER), 0, 1); return 0.622 + 0.008 * (1 - t) * (1 - t) + DK.SMILE * z * z; };
+// quả lê: càng xuống thấp càng phình ngang
 function duckTorso(x, y, z) {
-  const tx = x + 0.02, ty = y - 0.35;
-  const d = sdEllipsoid(tx * DK.TA + ty * DK.TB, -tx * DK.TB + ty * DK.TA, z, 0.27, 0.215, 0.235);
-  return smin(d, sdSphere(x - 0.10, y - 0.32, z, 0.185), 0.1);
-}
-// Cánh nằm cách hông một khe để lúc dang ra vẫn thấy hông; dải mép trên may liền vào thân làm bản lề
-function duckWing(x, y, dT) {
-  const W = DK.WING, dx = x - W.x, dy = y - W.y;
-  const u = (dx * W.c - dy * W.s) / W.ru, v = (dx * W.s + dy * W.c) / (W.rv * (1 + 0.3 * clamp(u, -1, 1)));
-  const e = Math.hypot(u, v);
-  const ht = W.T * (0.3 + 0.7 * Math.sqrt(Math.max(0, 1 - e * e)));
-  const hinge = sstep(0.2, 0.65, v) * sstep(-0.8, -0.4, u) * sstep(0.8, 0.4, u);
-  const w0 = W.gap + W.T;
-  return smax(Math.max(dT - w0 - ht, w0 - dT - ht - hinge * (w0 + 0.012)), (e - 1) * 0.07, 0.016);
+  const k = 1 + 0.22 * clamp(0.4 - y, -0.3, 0.3);
+  return sdEllipsoid((x + 0.01) / k, y - 0.32, z / k, 0.235, 0.225, 0.25) * k;
 }
 function duckSdf(x, y, z, L) {
   const az = Math.abs(z);
-  const dT = duckTorso(x, y, z);
-  let dBody = smin(dT, sdCone(DK.NECK, x, y, z), 0.09);
-  if (x < -0.08) {
-    let dTail = 1e9;
-    for (const c of DK.TAIL) dTail = Math.min(dTail, sdCone(c, x, y, z * 0.85));
-    dBody = smin(dBody, dTail, 0.07);
-  }
+  let dBody = duckTorso(x, y, z);
+  if (x < -0.1 && y > 0.18 && y < 0.5) dBody = smin(dBody, sdCone(DK.TAIL, x, y, z * 1.2), 0.06);
+  const dHead = sdEllipsoid(x - 0.05, y - 0.685, z, 0.25, 0.245, 0.275);
+  // smin rộng lấp kín chỗ nối đầu-thân thành một khối bông
+  let d = smin(dBody, dHead, 0.18);
   let dLeg = 1e9;
   if (y < 0.26) {
-    let foot = sdEllipsoid(x - 0.115, y - 0.014, az - 0.115, 0.078, 0.018, 0.06);
+    let foot = sdEllipsoid(x - 0.1, y - 0.014, az - 0.105, 0.07, 0.018, 0.055);
     for (const c of DK.TOES) foot = smin(foot, sdCone(c, x, y, az), 0.025);
     foot = smax(foot, y - 0.034, 0.012);
     dLeg = smax(smin(sdCone(DK.LEG, x, y, az), foot, 0.03), -y, 0.01);
+    d = smin(d, dLeg, 0.045);
   }
-  let d = smin(dBody, dLeg, 0.045);
-  let dWing = 1e9;
-  if (az > 0.1 && y > 0.19 && y < 0.53 && x > -0.26 && x < 0.17) {
-    dWing = duckWing(x, y, dT);
-    d = smin(d, dWing, 0.012);
+  let dArm = 1e9;
+  if (az > 0.1 && y > 0.2 && y < 0.54 && x > -0.12 && x < 0.22) {
+    const P = DK.PAW;
+    dArm = smin(sdCone(DK.ARM, x, y, az), sdSphere(x - P[0], y - P[1], az - P[2], P[3]), 0.03);
+    d = smin(d, dArm, 0.03);
   }
-  let dHead = 1e9;
-  if (y > 0.5) {
-    dHead = sdEllipsoid(x - 0.17, y - 0.78, z, 0.2, 0.19, 0.19);
-    dHead = smin(dHead, sdEllipsoid(x - 0.245, y - 0.715, az - 0.09, 0.10, 0.085, 0.088), 0.06);
-    if (y > 0.88 && az < 0.06) {
-      let t = 1e9;
-      // dẹt nhẹ theo z nhưng vẫn dày hơn 2 ô lưới mesh, không thì surface nets gập mỏng chóp xoăn
-      for (const c of DK.TUFT) t = Math.min(t, sdCone(c, x, y, z * 1.25) / 1.25 * 1.1);
-      dHead = smin(dHead, t, 0.02);
-    }
-    d = smin(d, dHead, 0.08);
-  }
-  let dBill = 1e9;
-  if (x > 0.2 && y > 0.6 && y < 0.82) {
-    dBill = smin(sdEllipsoid(x - 0.4, y - 0.728, z, 0.13, 0.034, 0.1), sdEllipsoid(x - 0.385, y - 0.693, z, 0.11, 0.024, 0.085), 0.015);
-    d = smin(d, dBill, 0.022);
+  let dBill = 1e9, dLow = 1e9;
+  if (x > 0.14 && y > 0.5 && y < 0.77 && az < 0.2) {
+    // uốn cả mỏ theo z² để hai khoé vểnh lên; mỏ trên to hơn mỏ dưới
+    const by = y - DK.SMILE * z * z;
+    dLow = sdEllipsoid(x - 0.284, by - 0.604, z, 0.09, 0.034, 0.122);
+    dBill = smin(sdEllipsoid(x - 0.292, by - 0.652, z, 0.102, 0.045, 0.142), dLow, 0.015);
+    d = smin(d, dBill, 0.03);
   }
   let dSlit = 1e9;
-  if (x > DK.CORNER - 0.08 && y > 0.6 && y < 0.82) {
-    dSlit = smax((Math.abs(y - duckMouthY(x)) - DK.SLIT) * 0.93, DK.CORNER - x, 0.02);
+  if (x > DK.CORNER - 0.08 && y > 0.52 && y < 0.76) {
+    dSlit = smax((Math.abs(y - duckMouthY(x, z)) - DK.SLIT) * 0.93, DK.CORNER - x, 0.02);
     d = smax(d, -dSlit, 0.006);
   }
-  let dNos = 1e9;
-  const n = DK.nostril;
-  if (n && x > 0.3 && y > 0.72) {
-    dNos = sdSphere(x - n[0], y - n[1], az - n[2], 0.011);
-    d = smax(d, -dNos, 0.005);
-  }
-  if (L) { L.body = dBody; L.leg = dLeg; L.head = dHead; L.bill = dBill; L.slit = dSlit; L.nos = dNos; L.wing = dWing; }
+  if (L) { L.body = dBody; L.leg = dLeg; L.head = dHead; L.bill = dBill; L.low = dLow; L.slit = dSlit; L.arm = dArm; }
   return d;
 }
 function duckFeatures() {
-  DK.nostril = null;
-  const eye = castOut([0.17, 0.78, 0], [0.58, 0.28, 0.76]);
-  const eyeC = [eye.p[0] - eye.n[0] * 0.014, eye.p[1] - eye.n[1] * 0.014, eye.p[2] - eye.n[2] * 0.014];
-  const nos = castOut([0.36, 0.732, 0], [0.15, 0.6, 1]);
-  DK.nostril = [nos.p[0] + nos.n[0] * 0.004, nos.p[1] + nos.n[1] * 0.004, nos.p[2] + nos.n[2] * 0.004];
-  // bản lề cánh nằm trên mặt thân (không phải mặt cánh) nên dò theo SDF thân riêng
-  const hx = DK.WING.x + 0.01, hy = DK.WING.y + 0.062;
-  let lo = 0, hi = 0.4;
-  for (let k = 0; k < 40; k++) { const m = (lo + hi) / 2; if (duckTorso(hx, hy, m) < 0) lo = m; else hi = m; }
+  const eye = castOut([0.05, 0.72, 0], [0.62, 0.16, 0.62]);
+  // bản lề tay ở chỗ trục tay chui vào thân (dò theo SDF thân riêng), nhích lên chút cho mép trên nách đỡ bị kéo căng
+  const A = DK.ARM, at = (t) => [A.ax + A.bax * t, A.ay + A.bay * t, A.az + A.baz * t];
+  let lo = 0, hi = 1;
+  for (let k = 0; k < 40; k++) { const m = (lo + hi) / 2; if (duckTorso(...at(m)) < 0) lo = m; else hi = m; }
+  const sh = at(lo);
   return {
-    eye: { c: eyeC, n: eye.n, r: 0.043 },
-    nostril: DK.nostril.slice(),
-    cheek: castOut([0.2, 0.72, 0], [0.3, -0.15, 1]).p,
-    snout: castOut([0.36, 0.735, 0], [1, 0.05, 0]).p,
-    mouth: [0.43, duckMouthY(0.43), 0],
-    jawPivot: [DK.CORNER - 0.005, duckMouthY(DK.CORNER) - 0.008, 0],
-    shoulder: [hx, hy, lo + 0.012],
-    tail: [[-0.25, 0.47, 0], [-0.33, 0.57, 0]],
+    eye: { c: [eye.p[0] - eye.n[0] * 0.011, eye.p[1] - eye.n[1] * 0.011, eye.p[2] - eye.n[2] * 0.011], n: eye.n, r: 0.025 },
+    // mỏ bông không khoét lỗ mũi; mốc chỉ để phun bụi lúc hắt xì
+    nostril: castOut([0.3, 0.65, 0], [0.35, 1, 0.6]).p,
+    cheek: castOut([0.05, 0.62, 0], [0.6, -0.13, 0.79]).p,
+    snout: castOut([0.26, 0.655, 0], [1, 0.05, 0]).p,
+    mouth: [0.33, duckMouthY(0.33, 0), 0],
+    jawPivot: [DK.CORNER - 0.005, duckMouthY(DK.CORNER, 0) - 0.008, 0],
+    shoulder: [sh[0], sh[1] + 0.015, sh[2]],
+    tail: [[-0.24, 0.33, 0], [-0.3, 0.37, 0]],
+    // mốc cho phụ kiện: đỉnh đầu và tâm bàn tay phải (z > 0, quay theo rig tay)
+    crown: castOut([0.05, 0.7, 0], [0, 1, 0]).p,
+    paw: { c: DK.PAW.slice(0, 3), r: DK.PAW[3] },
     teeth: [],
   };
 }
 function duckLabel(mesh, LM) {
   const nv = mesh.pos.length / 3;
   const mat = new Float32Array(nv * 4), rig = new Float32Array(nv * 3), panel = new Float32Array(nv * 2), uv = new Float32Array(nv * 2);
-  const L = {}, sp = {}, nos = LM.nostril, SP = DK.spine;
+  const L = {}, sp = {}, SP = DK.spine;
   for (let v = 0; v < nv; v++) {
     const x = mesh.pos[v * 3], y = mesh.pos[v * 3 + 1], z = mesh.pos[v * 3 + 2], az = Math.abs(z);
     duckSdf(x, y, z, L);
@@ -1047,23 +1028,21 @@ function duckLabel(mesh, LM) {
     // mỏ và chân là nỉ cam may rời nên mép màu gọn, không loang
     const bill = sstep(0.003, -0.003, L.bill - Math.min(L.head, L.body));
     const legDom = sstep(-0.006, 0.006, L.body - L.leg);
-    const dn = Math.hypot(x - nos[0], y - nos[1], az - nos[2]);
-    mat[v * 4] = mouth; mat[v * 4 + 2] = Math.max(bill, legDom); mat[v * 4 + 3] = sstep(0.017, 0.011, dn);
-    rig[v * 3] = sstep(DK.CORNER - 0.02, DK.CORNER + 0.05, x) * sstep(0.0, -0.008, y - duckMouthY(x)) * sstep(0.58, 0.64, y);
-    const wingW = sstep(0.01, -0.008, L.wing - Math.min(L.body, L.head)) * sstep(0.08, 0.13, az);
-    rig[v * 3 + 1] = z < 0 ? wingW : 0; rig[v * 3 + 2] = z > 0 ? wingW : 0;
+    mat[v * 4] = mouth; mat[v * 4 + 2] = Math.max(bill, legDom);
+    // hàm chỉ ôm mỏ dưới: cằm lông ngay dưới mỏ đứng yên, khỏi bị kéo giãn khi há
+    rig[v * 3] = sstep(DK.CORNER - 0.02, DK.CORNER + 0.04, x) * sstep(0, -0.008, y - duckMouthY(x, z)) * sstep(0.03, 0.008, L.low);
+    // dải chuyển trọng số rộng để lớp vải quanh nách giãn đều khi vỗ, không dồn vào một hàng tam giác
+    const armW = sstep(0.05, -0.02, L.arm - Math.min(L.body, L.head));
+    rig[v * 3 + 1] = z < 0 ? armW : 0; rig[v * 3 + 2] = z > 0 ? armW : 0;
     spineProject(SP, x, y, sp);
     const along = (x - sp.cx) * sp.ty - (y - sp.cy) * sp.tx;
     uv[v * 2] = sp.s; uv[v * 2 + 1] = Math.atan2(z, along) / (2 * Math.PI) + 0.5;
     if (legDom > 0.5) {
       uv[v * 2] = SP.len + 0.05 + (z > 0 ? 0.45 : 0) + y;
-      uv[v * 2 + 1] = Math.atan2(az - 0.115, x - 0.08) / (2 * Math.PI) + 0.5;
+      uv[v * 2 + 1] = Math.atan2(az - 0.105, x - 0.07) / (2 * Math.PI) + 0.5;
     }
-    const wingDom = sstep(-0.01, 0.01, L.body - L.wing);
-    let seam = along > 0 ? panelW(DK.PANEL, sp.s) - az : -0.06;
-    seam = seam * (1 - legDom) * (1 - wingDom) - 0.06 * Math.max(legDom, wingDom);
-    if (mouth > 0.5 || bill > 0.5 || face < L.body) seam = -0.06;
-    panel[v * 2] = seam; panel[v * 2 + 1] = sp.s;
+    // một màu từ đầu tới chân như thú bông gốc: không có tấm bụng
+    panel[v * 2] = -0.06; panel[v * 2 + 1] = sp.s;
   }
   return { mat, rig, panel, uv };
 }
@@ -1178,12 +1157,13 @@ const CHARS = {
   },
   duck: {
     sdf: duckSdf, features: duckFeatures, label: duckLabel, spine: DK.spine,
-    box: [-0.56, 0.62, 1.12, 0.36], lat: [-0.52, 0.6, 1.1, 0.34], h: 0.0175, s: 0.105,
+    box: [-0.42, 0.5, 1.0, 0.42], lat: [-0.4, 0.48, 0.98, 0.4], h: 0.0175, s: 0.105,
+    // đầu to liền thân: cả khối trên y≈0.5 quay theo đầu; neo đều cả đầu cho khỏi lúc lắc như bóng nước
     rig: {
-      hip: [0.055, 0.21, 0.115], neck: [0.1, 0.5, 0], tail: [-0.15, 0.42, 0], tailLen: 0.25, upperY: 0.21,
-      headW: [-0.12, 0.02, 0.44, 0.6], legW: [0.2, 0.085, 0.02, 0.06, -0.2, -0.1], liftW: [0.18, 0.02],
-      anchor: (x, y, z) => (x < -0.4 ? 0 : 26 * Math.exp(-(((x - 0.02) / 0.24) ** 2 + ((y - 0.34) / 0.17) ** 2 + (z / 0.2) ** 2)) + 5 * sstep(-0.02, 0.12, x) * sstep(0.6, 0.72, y) + 1.5),
-      sets: { head: (x, y) => x > -0.05 && y > 0.62, chest: (x, y) => x > -0.06 && x < 0.3 && y > 0.18 && y < 0.5, core: (x, y) => x > -0.3 && x < 0.25 && y > 0.1 && y < 0.58 },
+      hip: [0.045, 0.2, 0.105], neck: [0.03, 0.48, 0], tail: [-0.2, 0.32, 0], tailLen: 0.18, upperY: 0.2,
+      headW: [-0.5, -0.45, 0.42, 0.58], legW: [0.15, 0.05, 0.02, 0.06, -0.11, -0.03], liftW: [0.18, 0.02],
+      anchor: (x, y, z) => (x < -0.3 ? 0 : 26 * Math.exp(-((x / 0.24) ** 2 + ((y - 0.36) / 0.18) ** 2 + (z / 0.21) ** 2)) + 5 * sstep(0.55, 0.7, y) + 1.5),
+      sets: { head: (x, y) => y > 0.6, chest: (x, y) => x > -0.15 && x < 0.25 && y > 0.2 && y < 0.5, core: (x, y) => x > -0.28 && x < 0.26 && y > 0.1 && y < 0.58 },
     },
   },
   // không đuôi (tâm đuôi đặt xa ngoài thân), "đầu" là cả nửa trên cục bông uốn quanh điểm giữa thân; neo yếu cho rung rinh như thạch
@@ -1886,6 +1866,8 @@ const FABRICS = {
   vanilla: { base: '#f3e2c0', sheen: '#fffaf0', belly: '#fff8ea', spike: '#e79bb0', mouth: '#b9475b', claw: '#fffdf8', stitch: '#c79a6b', blush: '#ff9aa6', accent: '#c28a4e', patch: '#e79bb0', acc: '#8cc8e8' },
   kitty: { base: '#a8a8b4', sheen: '#eef0ff', belly: '#f1eef2', spike: '#f6b6c8', mouth: '#b8456b', claw: '#ffffff', stitch: '#ffffff', blush: '#ff9fb7', accent: '#6c6c86', patch: '#f6b6c8', acc: '#ffd36b' },
   strawberry: { base: '#e8505b', sheen: '#ffd5d8', belly: '#ffe9ec', spike: '#7cc576', mouth: '#8e1f3a', claw: '#fff7f2', stitch: '#fff3f3', blush: '#ffb0b8', accent: '#c73c4a', patch: '#ffe9a8', acc: '#7cc576' },
+  // má hồng chỉ phủ ~60% lên nền nên màu gốc phải đậm hơn đích: trộn với nền vàng nhạt mới ra đúng hồng phấn ~#ff9aa2
+  butter: { base: '#f9e9a2', sheen: '#fff6da', belly: '#fcf0c4', spike: '#f5a03a', mouth: '#c8505a', claw: '#f5a03a', stitch: '#fff9ea', blush: '#ff6e9e', accent: '#d39f2c', patch: '#ff9aa2', acc: '#ff8fae' },
 };
 let simTime = 0;
 const settings = {
@@ -1933,11 +1915,11 @@ const he = (c, o, t, p, g) => { hiss(c, o, 'bandpass', 2400, 1800, 1.2, t, 0.05,
 const CHARACTERS = {
   rex: {},
   duck: {
-    fabric: 'lemon', acc: false,
+    fabric: 'butter', acc: true,
     // tên, tiêu đề và câu màn chờ nằm ở data-* của nút chọn nhân vật (script nội tuyến dùng trước khi module chạy)
     ui: {
       'meta[name="description"]@content': 'Chú vịt con bằng bông mềm mại: signed distance field, surface nets, lưới XPBD chạy trong Web Worker và lớp lông nhung (fur shells) viết bằng TSL.',
-      '.lede': 'Nỉ vàng ươm, lông tơ mềm và vài trăm chiếc lò xo bé xíu, khâu thành một chú vịt con lạch bạch siêu dễ ôm.',
+      '.lede': 'Nỉ vàng bơ sữa, đầu tròn xoe, má hồng phúng phính và vài trăm chiếc lò xo bé xíu, khâu thành một chú vịt con lạch bạch siêu dễ ôm.',
       '#stage@aria-label': 'Khung xem vịt bông',
       '#view@aria-label': 'Khung nhìn 3D của chú vịt bông. Dùng các nút trong bảng hoặc phím: F cho ăn, R cạc cạc, S dậm chân, N mổ thóc, D nhảy múa, W vẫy cánh, J nhảy lò cò, T xoay vòng, G ngoáy đuôi, Z ngủ trưa, B ném bóng, M tắt/bật tiếng, Space tạm dừng.',
       '.hint': 'Kéo trên sàn để xoay quanh · chạm xuống sàn để gọi bé lại · xoa đầu, chạm nhẹ vào mỏ · chạm đúp để bé nhảy · giữ để nhấc bé lên (nắm chỏm đuôi là dễ nhất) · thử dụng cụ 🪶 Cù lét nhé',
@@ -1953,25 +1935,26 @@ const CHARACTERS = {
       nap: '😴 Rúc đầu ngủ trưa', wake: '🥱 Vươn cánh thức dậy', chase: '⚽ Lạch bạch đuổi bóng', nudge: '⚽ Lấy mỏ đẩy bóng', come: '❓ Lạch bạch chạy lại',
       happy: '💖 Thích được xoa đầu', giggle: '🤭 Cười khúc khích cạc cạc',
     },
-    colors: () => ({ claw: '#ffa53a' }),
-    heart: [[0.02, 0.32, 0], [1, -0.12, 0], 0.062], blush: [[0.22, 0.715, 0], [0.32, -0.2, 1]],
+    colors: () => ({ claw: '#f5a03a' }),
+    // má hồng to, tròn, loang mềm ngay cạnh khoé mỏ (thấp hơn đường mỏ một chút)
+    heart: [[0, 0.3, 0], [1, -0.15, 0], 0.055], blush: [[0.05, 0.62, 0], [0.6, -0.13, 0.79]], blushR: [0.092, 0.03, 0.125, 1.05],
     // bước ngắn, nhịp nhanh, lắc hông nhiều: dáng lạch bạch
     gait: { stride: 0.62, arc: 0.7, roll: 2.3, twist: 1.5 },
-    isPat: (r) => r.y > 0.84 || (r.y > 0.72 && r.x > -0.08 && r.x < 0.2),
-    isBoop: (r) => r.x > 0.3 && r.y > 0.64 && r.y < 0.79,
-    isTail: (r) => r.x < -0.24 && r.y > 0.38,
-    // cánh gập dọc hông, bản lề là mép trên: xoay quanh trục dọc cánh để dang ra ngoài rồi vỗ lên
+    isPat: (r) => r.y > 0.8 || (r.y > 0.7 && r.x < 0.12),
+    isBoop: (r) => r.x > 0.24 && r.y > 0.55 && r.y < 0.72 && Math.abs(r.z) < 0.16,
+    isTail: (r) => r.x < -0.2 && r.y > 0.22 && r.y < 0.46,
+    // tay cụt chĩa xuống hai bên hông: xoay quanh trục gần trùng hướng mặt để giơ ngang rồi vỗ lên
     wing: (a, sg, m) => m.makeRotationAxis(DUCK_WING_AXIS, -sg * a * 1.05),
     bubble: (s) => ({ '🍗!': '🍞!', '🍗': '🍞', '💢': 'Cạc cạc!' })[s] ?? s,
     food() {
       const g = new THREE.Group(), crust = feltMat('#dc9a4f', '#ffe2b0'), crumb = feltMat('#fbe6bd', '#ffffff');
       // ổ dài hơn bề ngang mỏ để lúc ngậm ngang vẫn thò ra hai bên
-      const loaf = new THREE.Mesh(new THREE.CapsuleGeometry(0.034, 0.22, 8, 18), crust);
+      const loaf = new THREE.Mesh(new THREE.CapsuleGeometry(0.034, 0.27, 8, 18), crust);
       loaf.rotation.z = Math.PI / 2; loaf.scale.set(0.82, 1, 1); loaf.position.y = -0.024;
       g.add(loaf);
       for (let i = -1; i <= 1; i++) {
         const cut = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 8), crumb);
-        cut.scale.set(0.03, 0.006, 0.011); cut.position.set(i * 0.065, 0.003, 0); cut.rotation.y = 0.7;
+        cut.scale.set(0.03, 0.006, 0.011); cut.position.set(i * 0.08, 0.003, 0); cut.rotation.y = 0.7;
         g.add(cut);
       }
       scene.add(g);
@@ -1995,6 +1978,11 @@ const CHARACTERS = {
         return 0.6;
       },
       chomp: (c, o, t, p) => { tone(c, o, 'sine', 1250 * p, 700 * p, t, 0.035, 0.14, 0.002); hiss(c, o, 'bandpass', 2600 * p, 2000, 2, t, 0.025, 0.12, 0.002); return 0.06; },
+    },
+    setup() {
+      // mắt hạt cườm đen bóng, không mống mắt; đốm sáng giữ nguyên tỉ lệ nên tự nhỏ theo mắt
+      const bead = new THREE.MeshPhysicalNodeMaterial({ color: '#0e0c0b', roughness: 0.18, clearcoat: 1, clearcoatRoughness: 0.06 });
+      for (const { e } of eyes) e.material = bead;
     },
     // chỉnh tư thế sau updateBrain: want được dựng lại mỗi khung nên nhân/ghi đè ở đây không cộng dồn
     adjust() {
@@ -2026,15 +2014,19 @@ const CHARACTERS = {
         want.headPitch += 0.22 * Math.max(0, Math.sin((t - 0.7) * 9)); want.jaw *= 1.3;
       } else if (s === 'nap') {
         const k = sstep(0, 1.6, t);
-        want.crouch = (0.1 + 0.006 * Math.sin(t * 1.5)) * k; want.headPitch = -0.5 * k; want.headYaw = 0.45 * k; want.headRoll = 0.3 * k;
+        // chân ngắn, đáy thân sát sàn: ngồi thụp sâu là ép bẹp mấy ô lưới dưới mông; đầu không cổ nên cúi ít để mỏ khỏi cắm vào ngực
+        want.crouch = (0.03 + 0.006 * Math.sin(t * 1.5)) * k; want.headPitch = -0.36 * k; want.headYaw = 0.45 * k; want.headRoll = 0.3 * k;
         want.armL = want.armR = 0; want.tailYaw = 0.3 * k;
       } else if (s === 'hop' && d.air) {
         want.armL = want.armR = 0.85 + 0.45 * Math.sin(t * 34);
+      } else if (s === 'grabbed') {
+        // chân cụt chỉ cao bằng nửa khủng long: đá và co chân mạnh như nó là ép lộn ô lưới ở bàn chân
+        want.kick = want.kick.map((v, i) => v * (i < 2 ? 0.75 : 0.3));
       }
     },
   },
   egg: {
-    fabric: 'pidan', acc: false, outline: true, stuffing: 0.42,
+    fabric: 'pidan', acc: true, outline: true, stuffing: 0.42,
     ui: {
       'meta[name="description"]@content': 'Trứng bắc thảo nhồi bông mềm nhũn: signed distance field, surface nets, lưới XPBD chạy trong Web Worker, viền đen kiểu sticker và lớp lông nhung viết bằng TSL.',
       '.lede': 'Một quả trứng bắc thảo nhồi bông, mũi đen sì, hay khóc nhè mà cười thì lè cả lưỡi. Bóp nhẹ là rung rinh như thạch.',
@@ -2506,8 +2498,11 @@ const HEART = (() => {
 })();
 // má hồng đặt ngay dưới mắt (mốc cheek gốc nằm quá xa phía sau, nhìn chính diện không thấy)
 const BLUSH_C = vec3(...restSDF.castOut(...CHAR.blush).p);
+// [mép ngoài, lõi, vùng loang khi ngượng, độ dẹt dọc]: nhân vật có thể đặt riêng qua blushR
+const BLUSH_R = CHAR.blushR || [0.036, 0.027, 0.085, 1.45];
 // dải khăn quanh cổ: mặt phẳng vuông góc trục cổ (a), f = hướng ra trước trong mặt phẳng đó
-const BAND = { c: vec3(0.255, 0.70, 0), a: vec3(0.669, 0.743, 0), f: vec3(0.743, -0.669, 0), w: 0.022 };
+// w = nửa bề rộng, r = bán kính cắt (ngoài, trong); là uniform vì mỗi nhân vật quàng ở chỗ khác (ACC_ANCHORS trong phần phụ kiện đặt lại)
+const BAND = { c: uniform(new THREE.Vector3(0.255, 0.70, 0)), a: uniform(new THREE.Vector3(0.669, 0.743, 0)), f: uniform(new THREE.Vector3(0.743, -0.669, 0)), w: uniform(0.022), r: uniform(new THREE.Vector2(0.205, 0.19)) };
 // SDF trái tim 2D (Inigo Quilez): mũi nhọn ở gốc, cao ~1.1, x >= 0
 const sdHeart = (x, y) => {
   const lobe = length(vec2(x, y).sub(vec2(0.25, 0.75))).sub(Math.SQRT2 / 4);
@@ -2524,7 +2519,7 @@ const decoMasks = (r, mt) => {
   const hd = sdHeart(abs(hu), hv).mul(HEART.s);
   const hFront = smoothstep(0.05, 0.03, abs(dot(hp, HEART.n)));
   const bp = r.sub(BAND.c), bd = dot(bp, BAND.a);
-  const band = smoothstep(BAND.w + 0.0015, BAND.w - 0.0015, abs(bd)).mul(smoothstep(0.205, 0.19, length(bp))).mul(float(1).sub(mt.y)).mul(U.bandana);
+  const band = smoothstep(BAND.w.add(0.0015), BAND.w.sub(0.0015), abs(bd)).mul(smoothstep(BAND.r.x, BAND.r.y, length(bp))).mul(float(1).sub(mt.y)).mul(U.bandana);
   return { hu, hv, hd, hFront, hIn: smoothstep(0.0008, -0.0008, hd).mul(hFront), bp, bd, band };
 };
 const skinNode = (isShell) => Fn(() => {
@@ -2607,15 +2602,15 @@ const fabricColor = Fn(() => {
   col.assign(mix(col, patchCol, dm.hIn));
   // dải khăn: chấm bi theo cung quanh cổ + đường viền gấp mép
   const bArc = atan(r.z, dot(dm.bp, BAND.f)).mul(0.15);
-  const bandCol = mix(U.acc, color('#fff8ec'), polka(bArc, dm.bd)).mul(float(1).sub(smoothstep(0.0035, 0.001, abs(abs(dm.bd).sub(BAND.w - 0.0045))).mul(0.22)));
+  const bandCol = mix(U.acc, color('#fff8ec'), polka(bArc, dm.bd)).mul(float(1).sub(smoothstep(0.0035, 0.001, abs(abs(dm.bd).sub(BAND.w.sub(0.0045)))).mul(0.22)));
   col.assign(mix(col, bandCol, dm.band));
   col.assign(mix(col, U.claw, mt.z));
   const mouthCol = U.mouth.mul(smoothstep(0.32, 0.62, r.x).mul(0.45).add(0.55));
   col.assign(mix(col, mouthCol, mt.x));
   col.assign(mix(col, U.mouth.mul(0.22), mt.w));
   // má hồng hình bầu dục ngay dưới mắt; luôn hồng nhẹ, đỏ đậm và lan rộng hơn khi ngượng
-  const cheekD = length(vec3(r.x, r.y, abs(r.z)).sub(BLUSH_C).mul(vec3(1, 1.45, 1)));
-  const blushA = max(smoothstep(0.036, 0.027, cheekD).mul(U.blush.mul(0.35).add(0.6)), smoothstep(0.085, 0.02, cheekD).mul(U.blush.mul(U.blush).mul(0.65)));
+  const cheekD = length(vec3(r.x, r.y, abs(r.z)).sub(BLUSH_C).mul(vec3(1, BLUSH_R[3], 1)));
+  const blushA = max(smoothstep(BLUSH_R[0], BLUSH_R[1], cheekD).mul(U.blush.mul(0.35).add(0.6)), smoothstep(BLUSH_R[2], 0.02, cheekD).mul(U.blush.mul(U.blush).mul(0.65)));
   col.assign(mix(col, U.blushColor, blushA));
   // nhung bị chải đổi sắc: xuôi về phía đèn chính thì sáng, ngược thì tối
   const V = normalize(cameraPosition.sub(positionWorld));
@@ -2723,15 +2718,104 @@ scene.add(teeth);
 // ------------------------------------------------------------------ cute details + accessories
 const deco = { worn: new Set(), live: [], blush: 0.36, t: 0, items: {}, tag: null };
 const _da = new THREE.Vector3(), _db = new THREE.Vector3(), _dc = new THREE.Vector3(), _dd = new THREE.Vector3(), _de = new THREE.Vector3(), _df = new THREE.Vector3();
-const _dq = new THREE.Quaternion(), _dq2 = new THREE.Quaternion(), ONE3 = new THREE.Vector3(1, 1, 1);
+const _dq = new THREE.Quaternion(), _dq2 = new THREE.Quaternion(), _dq3 = new THREE.Quaternion(), Q_ID = new THREE.Quaternion(), ONE3 = new THREE.Vector3(1, 1, 1), _dg = new THREE.Vector3();
 const M4 = () => new THREE.Matrix4();
 const V3 = (a) => new THREE.Vector3(...a);
 const CREAM = '#fff6e8';
 // mỗi món giữ một hay nhiều chỗ; đeo món mới sẽ tháo món cũ trùng chỗ (mũ len, tai nghe chùm cả hai bên đầu)
 const ACC_SLOTS = {
   bow: ['side'], flower: ['side'], hat: ['top'], crown: ['top'], beanie: ['top', 'side'], bunny: ['top'], wreath: ['top', 'side'],
-  horn: ['top'], halo: ['top'], phones: ['top', 'side'], glasses: ['face'], bandana: ['neck'], bowtie: ['neck'], backpack: ['back'],
+  horn: ['top'], halo: ['top'], phones: ['top', 'side'], glasses: ['face'], bandana: ['neck'], bowtie: ['neck'], backpack: ['back'], drumstick: ['top'],
+  scarf: ['top', 'side', 'neck'], shades: ['face'], bouquet: ['hand'],
 };
+// Chỗ gắn phụ kiện trong rest-space của từng nhân vật (tia bắn vào SDF lúc tải). Vịt/trứng chỉ ghi món cần đổi so với khủng long;
+// s = tỉ lệ món đồ theo cỡ đầu, shift = dời điểm gắn sau khi bắn tia, wear = bộ đeo mặc định, cover = món che kín giấu chi tiết bên dưới
+const ACC_ANCHORS = {
+  rex: {
+    wear: ['bow'],
+    bow: { at: [0.40, 0.92, 0], dir: [0, 0.6, 0.8], up: (n) => [n[0] * 0.5, n[1] * 0.5 + 0.5, n[2] * 0.5], yaw: -0.25 },
+    hat: { at: [0.43, 0.9, -0.015], dir: [0, 1, 0], up: () => [0.06, 1, 0.07], gap: -0.009 },
+    flower: { at: [0.45, 0.92, 0], dir: [0.05, 0.6, 1], up: (n) => [n[0] + 0.7, n[1] + 0.1, n[2]], gap: -0.002 },
+    crown: { at: [0.44, 0.95, 0], dir: [0, 1, 0], up: () => [0, 1, 0.1], gap: -0.005 },
+    // c = tâm bắn tia, ray = hướng tia (ngang x, lên, ngang z) quét một vòng quanh đầu
+    wreath: { c: [0.47, 0.93, 0], ray: [0.12, 0.1, 0.15], top: [0.46, 0.95, 0] },
+    horn: { at: [0.5, 0.95, 0], dir: [0.3, 1, 0], up: () => [0.42, 1, 0], gap: -0.004 },
+    halo: { top: [0.44, 0.95, 0], h: 0.088 },
+    bunny: { c: [0.348, 0.89, 0], span: 1.2 },
+    beanie: { c: [0.475, 0.9, 0], ray: [0.112, 0.075, 0.03, 0.17], apex: [0.462, 1.1, 0], top: [0.45, 0.95, 0] },
+    phones: { c: [0.4, 0.9, 0], span: 1.15, top: [0.4, 0.95, 0] },
+    glasses: { R: 0.05, arch: 0.01 },
+    bandana: { c: [0.255, 0.70, 0], a: [0.669, 0.743, 0], f: [0.743, -0.669], w: 0.022, r: [0.205, 0.19], H: 0.07, span: 0.68 },
+    bowtie: { at: [0.25, 0.598, 0], dir: [1, -0.12, 0], up: (n) => [-n[0] * n[1], 1 - n[1] * n[1], -n[2] * n[1]], gap: -0.002 },
+    backpack: { o: [0.07, 0.62, 0.02], dir: [-0.22, 1, 0.56], strap: [0.17, 0.62, 0], D: [[-0.3, 1, 0.42], [0.15, 0.75, 0.8], [0.75, 0.25, 0.62], [0.95, -0.35, 0.42]], ridge: [1.0, 0.6], top: [0.06, 0.7, 0] },
+    drumstick: { at: [0.45, 0.95, 0], dir: [0, 1, 0], up: () => [0.08, 1, 0], yaw: 1.3, gap: -0.006 },
+    tag: { at: [-0.3, 0.46, 0], dir: [0, -1, 0.4] },
+    // H = điểm trong đầu để bắn tia, open = nửa góc nón chừa mặt quanh hướng +x, t = góc (trước → đỉnh → gáy) phủ vải, knot = hướng nút buộc,
+    // via = hướng điểm dải buộc đi qua (z lấy theo bên)
+    scarf: { H: [0.42, 0.86, 0], open: 0.98, t: [-0.45, 3.3], knot: [-0.2, -1, 0] },
+    shades: { R: 0.046 },
+    bouquet: { s: 0.9 },
+  },
+  // Vịt: mọi chỗ gắn tính từ tâm đầu H (lùi sau giữa hai mắt) và bán kính đầu r đo bằng tia ngang, nên tự theo khi đầu đổi cỡ.
+  // Chỏm lông mảnh giữa đỉnh đầu: mũ tiệc và đùi gà nghiêng hai bên chỏm cho nhìn chính diện vẫn thấy, vương miện ôm quanh chỏm, mũ len trùm kín
+  duck: (L) => {
+    const e = L.eye.c, H = [e[0] - 0.1, e[1] - 0.03, 0], r = restSDF.castOut(H, [0, 0, 1]).p[2];
+    const at = (dx, dy, dz = 0) => [H[0] + dx * r, H[1] + dy * r, dz * r];
+    const tail = L.tail ? L.tail[0] : at(-2.2, -2);
+    return {
+      wear: ['scarf'],
+      bow: { at: H, dir: [0, 0.6, 0.8] },
+      flower: { at: H, dir: [0.05, 0.5, 1] },
+      hat: { at: at(-0.15, 0, 0.45), dir: [0, 1, 0.3], up: () => [-0.05, 1, 0.42] },
+      crown: { at: at(-0.13, 0, 0.32), dir: [0, 1, 0], shift: [0, 0, -0.32 * r], up: () => [0, 1, 0.06], s: 1.1 },
+      wreath: { c: at(0, 0.05), ray: [0.13, 0.1, 0.14], top: H },
+      horn: { at: at(0.35, 0.25), dir: [0.45, 1, 0], up: () => [0.5, 1, 0] },
+      halo: { top: H, h: 0.05 },
+      bunny: { c: at(-0.75, 0), span: 1.2 },
+      beanie: { c: H, ray: [0.12, 0.075, 0.03, 0.14], apex: at(-0.08, 1.45), top: H },
+      phones: { c: at(-0.7, 0), cup: at(-0.4, 0), span: 1.15, top: at(-0.7, 0) },
+      glasses: { R: 0.055, arch: 0.012, top: at(0.4, 0) },
+      bandana: { c: at(-0.19, -1.05), a: [0.346, 0.938, 0], f: [0.938, -0.346], w: 0.02, r: [1.05 * r, 0.97 * r], H: 0.065, span: 0.68 },
+      bowtie: { at: at(-0.13, -1.26), dir: [1, -0.25, 0] },
+      backpack: { o: at(-1.03, -1.58, 0.1), dir: [-0.5, 1, 0.5], strap: at(-0.71, -1.68), D: [[-0.4, 1, 0.4], [0, 0.8, 0.8], [0.6, 0.3, 0.75], [0.9, -0.3, 0.45]], ridge: [H[1], H[1] - 2.6 * r], top: at(-1.18, -1.32) },
+      drumstick: { at: at(-0.1, 0, -0.48), dir: [0, 1, -0.3], up: () => [0, 1, -0.38], yaw: -1.04, s: 1.1 },
+      tag: { at: [tail[0] + 0.05, tail[1] - 0.05, 0], dir: [-0.3, -1, 0.4] },
+      scarf: { H, open: 1.0, t: [-0.75, 3.85], knot: [0.35, -1, 0] },
+      shades: { R: 0.062 },
+      bouquet: { s: 1.4 },
+    };
+  },
+  // đầu là cả nửa trên cục bông nên đồ đội đầu phóng to; không có cổ nên khăn/nơ cổ quàng ngay dưới cằm
+  egg: {
+    wear: ['drumstick'],
+    cover: { beanie: () => EGG.hair.map((h) => h.mesh), scarf: () => EGG.hair.map((h) => h.mesh) },
+    bow: { at: [0, 0.7, 0], dir: [0.32, 0.5, 0.8], s: 1.3 },
+    flower: { at: [0, 0.7, 0], dir: [0.3, 0.4, 1], s: 1.3 },
+    hat: { at: [0, 0.7, 0], dir: [0.15, 1, 0], up: () => [0.1, 1, 0.05], s: 1.3 },
+    crown: { at: [0, 0.7, 0], dir: [0.1, 1, 0], up: () => [0.05, 1, 0.05], s: 1.25 },
+    wreath: { c: [0, 0.62, 0], ray: [0.25, 0.18, 0.25], top: [0, 0.7, 0], s: 1.3 },
+    horn: { at: [0, 0.7, 0], dir: [0.9, 1, 0], up: () => [0.5, 1, 0], s: 1.3 },
+    halo: { top: [0, 0.7, 0], h: 0.13, s: 1.4 },
+    bunny: { c: [-0.07, 0.65, 0], span: 1.0, s: 1.3 },
+    beanie: { c: [0, 0.66, 0], ray: [0.28, 0.17, 0.02, 0.28], apex: [0, 1.06, 0], top: [0, 0.7, 0] },
+    phones: { c: [-0.07, 0.66, 0], cup: [0, 0.66, 0], span: 1.2, top: [0, 0.7, 0], s: 1.35 },
+    glasses: { R: 0.052, arch: 0.008, top: [0.2, 0.7, 0] },
+    bandana: { c: [0, 0.295, 0], a: [0, 1, 0], f: [1, 0], w: 0.02, r: [0.47, 0.45], H: 0.075, span: 0.75 },
+    bowtie: { at: [0.1, 0.3, 0], dir: [1, 0, 0], s: 1.35 },
+    backpack: { o: [-0.1, 0.5, 0.03], dir: [-1, 0.2, 0.42], strap: [0, 0.5, 0], D: [[-0.8, 0.55, 0.3], [-0.35, 0.55, 0.85], [-0.2, 0.05, 1], [-0.25, -0.4, 0.9]], ridge: [1.0, 0.3], top: [-0.2, 0.5, 0], s: 1.3 },
+    drumstick: { at: [0, 0.7, 0], dir: [0, 1, 0], up: () => [0.05, 1, 0], yaw: 1.25, s: 1.5 },
+    tag: { at: [0, 0.3, 0], dir: [-1, -0.25, 0.3] },
+    scarf: { H: [0, 0.6, 0], open: 0.78, t: [-0.35, 2.75], knot: [0.8, -0.45, 0.1], via: [0.6, -0.55, 0.55] },
+    shades: { R: 0.05 },
+    bouquet: { s: 1.5 },
+  },
+};
+const ANCH = (typeof ACC_ANCHORS[CHAR.id] === 'function' ? ACC_ANCHORS[CHAR.id](LM) : ACC_ANCHORS[CHAR.id]) || ACC_ANCHORS.rex;
+const accFit = (k) => ({ s: 1, ...ACC_ANCHORS.rex[k], ...ANCH[k] });
+{
+  const F = accFit('bandana');
+  BAND.c.value.set(...F.c); BAND.a.value.set(...F.a); BAND.f.value.set(F.f[0], F.f[1], 0); BAND.w.value = F.w; BAND.r.value.set(...F.r);
+}
 const accMat = new THREE.MeshPhysicalNodeMaterial({ roughness: 0.92, sheen: 1, sheenRoughness: 0.45, sheenColor: new THREE.Color('#fff2ea'), side: THREE.DoubleSide });
 // dcol.w: 4 = len (sọc kem ngang + gân dọc), 5 = sừng pastel đổi màu theo chiều cao
 accMat.colorNode = Fn(() => {
@@ -2745,11 +2829,16 @@ accMat.colorNode = Fn(() => {
   col.assign(mix(col, color(CREAM), smoothstep(0.31, 0.34, abs(fract(p.y.mul(28)).sub(0.5))).mul(knit)));
   col.mulAssign(float(1).sub(abs(atan(p.z, p.x).mul(34).sin()).mul(0.13).mul(knit)));
   const hy = p.y.mul(9).min(1).max(0);
-  const horn = step(4.5, c.w);
+  const horn = flag(4.5, 5.5);
   col.assign(mix(col, mix(mix(color('#ffc4dd'), color('#d2c4ff'), smoothstep(0.05, 0.55, hy)), color('#fff0c4'), smoothstep(0.55, 1, hy)), horn));
   col.mulAssign(float(1).sub(atan(p.z, p.x).mul(2).sub(p.y.mul(150)).sin().mul(0.5).add(0.5).mul(0.16).mul(horn)));
+  // caro (gingham): dcol.xy là toạ độ vải; sọc ngang và dọc chồng lên nhau thành ô đậm
+  const gu = smoothstep(0.22, 0.28, abs(fract(c.x).sub(0.5))), gv = smoothstep(0.22, 0.28, abs(fract(c.y).sub(0.5)));
+  const ging = mix(mix(color('#fbfbf2'), color('#9fd49a'), max(gu, gv)), color('#4f9d55'), gu.mul(gv));
+  col.assign(mix(col, ging, flag(5.5, 6.5)));
   return col.mul(texture(strandTex, p.xz.mul(5)).z.mul(0.14).add(0.93));
 })();
+const lensMat = new THREE.MeshPhysicalNodeMaterial({ color: '#3a1830', roughness: 0.25, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.15, sheen: 0.4, sheenColor: new THREE.Color('#ff9cc4'), side: THREE.DoubleSide });
 const haloGlow = uniform(1);
 const haloMat = new THREE.MeshPhysicalNodeMaterial({ roughness: 0.45, sheen: 0.8, sheenRoughness: 0.4, sheenColor: new THREE.Color('#fff4c8') });
 haloMat.colorNode = color('#ffe7a0');
@@ -2830,31 +2919,42 @@ function strap(pts, w, th) {
   g.computeVertexNormals();
   return g;
 }
-function addPiece(key, geo, at, { q = new THREE.Quaternion(), frame = 'head', up = [0, 1, 0], n = up, wob, mat = accMat, bob = 0 }) {
+// trọng số hàm (rig.x) của đỉnh lưới gần nhất: món nằm dưới cằm phải há theo hàm như đỉnh lưới trong shader (applyRig)
+function jawAt(p) {
+  const P = R.mesh.pos;
+  let b = 1e9, k = 0;
+  for (let v = 0; v < P.length; v += 3) { const d = (P[v] - p[0]) ** 2 + (P[v + 1] - p[1]) ** 2 + (P[v + 2] - p[2]) ** 2; if (d < b) { b = d; k = v; } }
+  return R.mesh.rig[k];
+}
+const jawRig = (v, w) => v.lerp(_dg.copy(v).sub(U.jawPivot.value).applyMatrix4(rot.jaw).add(U.jawPivot.value), w);
+function addPiece(key, geo, at, { q = new THREE.Quaternion(), frame = 'head', up = [0, 1, 0], n = up, wob, mat = accMat, bob = 0, jaw = false }) {
   const mesh = new THREE.Mesh(geo, mat);
   mesh.matrixAutoUpdate = false; mesh.visible = false;
   scene.add(mesh);
-  (deco.items[key] ||= []).push({ mesh, q, frame, b: bindPoint(at), up: V3(up).normalize(), n: V3(n).normalize(), w: makeWobble(...wob), kick: 0, bob });
+  (deco.items[key] ||= []).push({ mesh, q, frame, b: bindPoint(at), up: V3(up).normalize(), n: V3(n).normalize(), w: makeWobble(...wob), kick: 0, bob, jw: jaw ? jawAt(at) : 0 });
 }
 // dây đeo vắt từ lưng xuống ngực: thân giãn mạnh khi bị xách đuôi nên mỗi đỉnh bám lưới riêng thay vì theo một ma trận
-function addSkin(key, geo) {
+function addSkin(key, geo, jaw = false) {
   const p = geo.attributes.position, skin = [];
   for (let i = 0; i < p.count; i++) skin.push(bindPoint([p.getX(i), p.getY(i), p.getZ(i)]));
   const mesh = new THREE.Mesh(geo, accMat);
   mesh.visible = false; mesh.frustumCulled = false;
   scene.add(mesh);
-  (deco.items[key] ||= []).push({ mesh, skin, n0: geo.attributes.normal.array.slice() });
+  (deco.items[key] ||= []).push({ mesh, skin, n0: geo.attributes.normal.array.slice(), jw: jaw ? Float32Array.from(skin, (b) => jawAt(b.rest)) : null });
 }
 // geometry dựng thẳng trong rest-space (ôm theo hình đầu/thân), gốc quay đặt ở A
 const addRest = (key, geo, A, o) => addPiece(key, geo.translate(-A.x, -A.y, -A.z), [A.x, A.y, A.z], o);
-function addAcc(key, geo, { at, dir, up, fwd = [1, 0, 0], yaw = 0, gap = -0.003, ...o }) {
-  const s = restSDF.castOut(at, dir);
-  const Y = V3(up(s.n)).normalize();
+function addAcc(key, geo, { at, dir, up, fwd = [1, 0, 0], yaw = 0, gap = -0.003, s = 1, shift = [0, 0, 0], wob, ...o }) {
+  if (s !== 1) geo.scale(s, s, s);
+  const c = restSDF.castOut(at, dir), p = [c.p[0] + shift[0], c.p[1] + shift[1], c.p[2] + shift[2]];
+  const Y = V3(up(c.n)).normalize();
   const X = V3(fwd);
   X.addScaledVector(Y, -X.dot(Y)).normalize();
   const q = new THREE.Quaternion().setFromRotationMatrix(M4().makeBasis(X, Y, new THREE.Vector3().crossVectors(X, Y))).multiply(new THREE.Quaternion().setFromAxisAngle(Y_AXIS, yaw));
-  addPiece(key, geo, sitOn(geo, q, s.p, s.n, gap), { ...o, q, up: Y.toArray(), n: s.n });
+  addPiece(key, geo, sitOn(geo, q, p, c.n, gap), { ...o, q, up: Y.toArray(), n: c.n, wob: [wob[0] * s, ...wob.slice(1)] });
 }
+
+const sc = (w, s) => [w[0] * s, ...w.slice(1)];
 
 // nơ nỉ: hai cánh hình giọt nước (lathe dẹt) + nút thắt
 addAcc('bow', (() => {
@@ -2867,14 +2967,14 @@ addAcc('bow', (() => {
     [wing, lift.clone().multiply(M4().makeRotationY(Math.PI + 0.2)).multiply(M4().makeRotationX(-0.28)), '#ffffff', 1],
     [new THREE.SphereGeometry(1, 18, 12), lift.clone().multiply(M4().makeScale(0.017, 0.021, 0.018)), '#e2e2e2', 1],
   ]);
-})(), { at: [0.40, 0.92, 0], dir: [0, 0.6, 0.8], up: (n) => [n[0] * 0.5, n[1] * 0.5 + 0.5, n[2] * 0.5], yaw: -0.25, wob: [0.05, 15, 0.22, 0.4, 0.8, 0.35] });
+})(), { ...accFit('bow'), wob: [0.05, 15, 0.22, 0.4, 0.8, 0.35] });
 
 // mũ tiệc: nón sọc xoắn, viền lông + quả bông
 addAcc('hat', mergeGeos([
   [new THREE.ConeGeometry(0.046, 0.122, 40, 6, true), M4().makeTranslation(0, 0.066, 0), '#ffffff', 2],
   [new THREE.TorusGeometry(0.047, 0.0125, 10, 44), M4().makeRotationX(Math.PI / 2).setPosition(0, 0.007, 0), CREAM, 0],
   [new THREE.SphereGeometry(0.018, 18, 12), M4().makeTranslation(0, 0.131, 0), CREAM, 0],
-]), { at: [0.43, 0.9, -0.015], dir: [0, 1, 0], up: () => [0.06, 1, 0.07], gap: -0.009, wob: [0.11, 12, 0.2, 0.35, 1.2, 0.3] });
+]), { ...accFit('hat'), wob: [0.11, 12, 0.2, 0.35, 1.2, 0.3] });
 
 // hoa cúc cài cạnh đầu, mặt hoa ngả về phía trước cho dễ thấy
 addAcc('flower', (() => {
@@ -2883,7 +2983,7 @@ addAcc('flower', (() => {
   parts.push([new THREE.SphereGeometry(0.0145, 18, 10), M4().makeTranslation(0, 0.005, 0).multiply(M4().makeScale(1, 0.6, 1)), '#ffc23a']);
   for (const a of [2.6, 3.6]) parts.push([petal, M4().makeTranslation(0, -0.004, 0).multiply(M4().makeRotationY(a)).multiply(M4().makeTranslation(0.034, 0, 0)).multiply(M4().makeScale(0.027, 0.004, 0.012)), '#7dba5c']);
   return mergeGeos(parts);
-})(), { at: [0.45, 0.92, 0], dir: [0.05, 0.6, 1], up: (n) => [n[0] + 0.7, n[1] + 0.1, n[2]], gap: -0.002, wob: [0.045, 15, 0.2, 0.4, 0.6, 0.35] });
+})(), { ...accFit('flower'), wob: [0.045, 15, 0.2, 0.4, 0.6, 0.35] });
 
 // vương miện nỉ vàng: thân trụ cắt 5 chóp, mỗi chóp một hạt ngọc trai, đá hồng giữa các chóp, viền theo màu vải
 addAcc('crown', (() => {
@@ -2901,27 +3001,28 @@ addAcc('crown', (() => {
     parts.push([new THREE.SphereGeometry(1, 14, 10), M4().makeTranslation(Math.cos(g) * 0.051, 0.017, Math.sin(g) * 0.051).multiply(M4().makeRotationY(-g)).multiply(M4().makeScale(0.0035, 0.0068, 0.0068)), '#ff6f9c', 0]);
   }
   return mergeGeos(parts).scale(1.15, 1.15, 1.15);
-})(), { at: [0.44, 0.95, 0], dir: [0, 1, 0], up: () => [0, 1, 0.1], gap: -0.005, wob: [0.06, 13, 0.22, 0.35, 0.8, 0.2] });
+})(), { ...accFit('crown'), wob: [0.06, 13, 0.22, 0.35, 0.8, 0.2] });
 
 // vòng hoa: dây leo chạy quanh mép đỉnh đầu (bắn tia vào SDF), tám bông năm cánh ngửa ra ngoài, lá xen giữa
 {
+  const F0 = accFit('wreath'), S = V3([F0.s, F0.s, F0.s]);
   const petal = new THREE.SphereGeometry(1, 12, 8), parts = [], vine = [], NV = 48;
   const cols = ['#ff9ec4', '#fffdf8', '#c9b1ff', '#ffffff', '#ffc59e', '#fffdf8', '#ff9ec4', '#ffffff'];
-  const on = (a) => restSDF.castOut([0.47, 0.93, 0], [Math.cos(a) * 0.12, 0.1, Math.sin(a) * 0.15]);
+  const on = (a) => restSDF.castOut(F0.c, [Math.cos(a) * F0.ray[0], F0.ray[1], Math.sin(a) * F0.ray[2]]);
   for (let i = 0; i < NV; i++) { const s = on(i / NV * Math.PI * 2); vine.push(V3(s.p).addScaledVector(V3(s.n), 0.009)); }
   parts.push([tube(vine, 0.004, true, 192), null, '#6fae55', 0]);
   for (let i = 0; i < 8; i++) {
     const a = (i + 0.5) / 8 * Math.PI * 2, s = on(a), n = V3(s.n).add(V3([0, 0.7, 0])).normalize();
-    const F = M4().compose(V3(s.p).addScaledVector(n, 0.012), new THREE.Quaternion().setFromUnitVectors(Y_AXIS, n), ONE3);
+    const F = M4().compose(V3(s.p).addScaledVector(n, 0.012 * F0.s), new THREE.Quaternion().setFromUnitVectors(Y_AXIS, n), S);
     for (let k = 0; k < 5; k++) parts.push([petal, F.clone().multiply(M4().makeRotationY(k / 5 * Math.PI * 2 + i)).multiply(M4().makeTranslation(0.0165, 0, 0)).multiply(M4().makeScale(0.0175, 0.0055, 0.0125)), cols[i], cols[i] === '#ffffff' ? 1 : 0]);
     parts.push([new THREE.SphereGeometry(0.0082, 12, 8), F.clone().multiply(M4().makeTranslation(0, 0.004, 0)), '#ffc23a']);
     for (const d of [-1, 1]) {
       const l = on(a + d * 0.24), ln = V3(l.n), t = V3(on(a + d * 0.24 + 0.03).p).sub(V3(on(a + d * 0.24 - 0.03).p));
       t.addScaledVector(ln, -t.dot(ln)).normalize().applyAxisAngle(ln, d * 0.5);
-      parts.push([petal, M4().makeBasis(t, ln, new THREE.Vector3().crossVectors(t, ln)).setPosition(V3(l.p).addScaledVector(ln, 0.01)).multiply(M4().makeScale(0.017, 0.004, 0.0075)), '#7dba5c']);
+      parts.push([petal, M4().makeBasis(t, ln, new THREE.Vector3().crossVectors(t, ln)).setPosition(V3(l.p).addScaledVector(ln, 0.01)).multiply(M4().makeScale(0.017 * F0.s, 0.004 * F0.s, 0.0075 * F0.s)), '#7dba5c']);
     }
   }
-  addRest('wreath', mergeGeos(parts), V3(restSDF.castOut([0.46, 0.95, 0], [0, 1, 0]).p), { wob: [0.06, 13, 0.25, 0.3, 0.5, 0.04] });
+  addRest('wreath', mergeGeos(parts), V3(restSDF.castOut(F0.top, [0, 1, 0]).p), { wob: [0.06, 13, 0.25, 0.3, 0.5, 0.04] });
 }
 
 // sừng kỳ lân: lathe xoắn hai rãnh, pastel đổi màu theo chiều cao, vòng vàng ở chân
@@ -2935,18 +3036,18 @@ addAcc('horn', (() => {
   }
   horn.computeVertexNormals();
   return mergeGeos([[horn, null, '#ffffff', 5], [new THREE.TorusGeometry(0.0245, 0.0055, 8, 36), M4().makeRotationX(Math.PI / 2).setPosition(0, 0.004, 0), '#ffd66e', 0]]);
-})(), { at: [0.5, 0.95, 0], dir: [0.3, 1, 0], up: () => [0.42, 1, 0], gap: -0.004, wob: [0.09, 14, 0.25, 0.3, 0.6, 0.15] });
+})(), { ...accFit('horn'), wob: [0.09, 14, 0.25, 0.3, 0.6, 0.15] });
 
 // hào quang: vòng phát sáng lơ lửng trên đỉnh đầu, nghiêng về phía trước cho dễ thấy, nhấp nhô nhẹ
 {
-  const A = V3(restSDF.castOut([0.44, 0.95, 0], [0, 1, 0]).p);
-  addRest('halo', new THREE.TorusGeometry(0.056, 0.0085, 12, 56).rotateX(Math.PI / 2).rotateZ(-0.26).translate(A.x, A.y + 0.088, 0), A, { mat: haloMat, bob: 0.007, wob: [0.088, 6, 0.18, 0.35, 0.4, 0.3] });
+  const F = accFit('halo'), A = V3(restSDF.castOut(F.top, [0, 1, 0]).p);
+  addRest('halo', new THREE.TorusGeometry(0.056 * F.s, 0.0085, 12, 56).rotateX(Math.PI / 2).rotateZ(-0.26).translate(A.x, A.y + F.h, 0), A, { mat: haloMat, bob: 0.007, wob: [F.h, 6, 0.18, 0.35, 0.4, 0.3] });
 }
 
-// tai thỏ: bờm ôm đỉnh đầu ngay trước gai đầu + hai tai có lò xo riêng nên vẫy lệch nhịp, tai phải gập đầu
+// tai thỏ: bờm ôm đỉnh đầu (sau gai đầu / chỏm tóc) + hai tai có lò xo riêng nên vẫy lệch nhịp, tai phải gập đầu
 {
-  const arc = [];
-  for (let i = 0; i <= 16; i++) { const t = (i / 8 - 1) * 1.2; arc.push(onSurf([0.348, 0.89, 0], [0, Math.cos(t), Math.sin(t)], 0.009)); }
+  const F = accFit('bunny'), arc = [];
+  for (let i = 0; i <= 16; i++) { const t = (i / 8 - 1) * F.span; arc.push(onSurf(F.c, [0, Math.cos(t), Math.sin(t)], 0.009)); }
   const cap = (p) => [new THREE.SphereGeometry(0.0072, 12, 8), M4().setPosition(p), '#ffffff', 1];
   addRest('bunny', mergeGeos([[tube(arc, 0.0068, false, 64), null, '#ffffff', 1], cap(arc[0]), cap(arc[16])]), arc[8].clone(), { wob: [0.05, 18, 0.3, 0.2, 0, 0.02] });
   const prof = [];
@@ -2961,16 +3062,18 @@ addAcc('horn', (() => {
       }
       ear.computeVertexNormals();
     }
+    ear.scale(F.s, F.s, F.s);
     const up = V3([-0.2, 1, 0.32 * s]).normalize(), X = V3([1, 0, 0]).addScaledVector(up, -up.x).normalize(), b = arc[8 + s * 3];
-    addPiece('bunny', ear, [b.x, b.y + 0.004, b.z], { q: new THREE.Quaternion().setFromRotationMatrix(M4().makeBasis(X, up, new THREE.Vector3().crossVectors(X, up))), up: up.toArray(), wob: [0.1, 7, 0.12, 0.75, 1.2, 0.5] });
+    addPiece('bunny', ear, [b.x, b.y + 0.004, b.z], { q: new THREE.Quaternion().setFromRotationMatrix(M4().makeBasis(X, up, new THREE.Vector3().crossVectors(X, up))), up: up.toArray(), wob: sc([0.1, 7, 0.12, 0.75, 1.2, 0.5], F.s) });
   }
 }
 
 // mũ len: vành gân bo quanh đỉnh đầu (bắn tia vào SDF), chóp phồng rồi ép ra khỏi lông, quả bông xù trên đỉnh
 {
+  const F = accFit('beanie'), [rx, ry, rc, rz] = F.ray;
   const NR = 56, NS = 12, rim = [], P = [], I = [];
-  for (let i = 0; i < NR; i++) { const a = i / NR * Math.PI * 2, c = Math.cos(a); rim.push(onSurf([0.475, 0.9, 0], [c * 0.112, 0.075 + 0.03 * c * c, Math.sin(a) * 0.17], 0.004)); }
-  const apex = V3([0.462, 1.1, 0]);
+  for (let i = 0; i < NR; i++) { const a = i / NR * Math.PI * 2, c = Math.cos(a); rim.push(onSurf(F.c, [c * rx, ry + rc * c * c, Math.sin(a) * rz], 0.004)); }
+  const apex = V3(F.apex);
   for (let j = 0; j <= NS; j++) {
     const h = Math.cos(j / NS * Math.PI / 2), k = Math.sin(j / NS * Math.PI / 2);
     for (const r of rim) { const p = snap(V3([apex.x + (r.x - apex.x) * h, r.y + (apex.y - r.y) * k, r.z * h]), 0.007, true); P.push(p.x, p.y, p.z); }
@@ -2986,28 +3089,28 @@ addAcc('horn', (() => {
   const pom = new THREE.SphereGeometry(0.025, 24, 16), pp = pom.attributes.position;
   for (let i = 0; i < pp.count; i++) { const x = pp.getX(i), y = pp.getY(i), z = pp.getZ(i), f = 1 + 0.13 * Math.sin(x * 900) * Math.sin(y * 870 + 1) * Math.sin(z * 910 + 2); pp.setXYZ(i, x * f, y * f, z * f); }
   pom.computeVertexNormals();
-  addRest('beanie', mergeGeos([[dome, null, '#ffffff', 4], [brim, null, CREAM, 0], [pom, M4().makeTranslation(apex.x, apex.y + 0.016, 0), CREAM, 0]]), V3(restSDF.castOut([0.45, 0.95, 0], [0, 1, 0]).p), { wob: [0.09, 11, 0.25, 0.3, 0.6, 0.025] });
+  addRest('beanie', mergeGeos([[dome, null, '#ffffff', 4], [brim, null, CREAM, 0], [pom, M4().makeTranslation(apex.x, apex.y + 0.016, 0), CREAM, 0]]), V3(restSDF.castOut(F.top, [0, 1, 0]).p), { wob: [0.09, 11, 0.25, 0.3, 0.6, 0.025] });
 }
 
 // tai nghe: quai nổi trên đỉnh đầu, hai chụp tai ở chỗ "tai" sau mắt
 {
-  const arc = [], parts = [], cup = [1, -1].map((s) => restSDF.castOut([0.4, 0.9, 0], [0, -0.05, s]));
-  for (let i = 0; i <= 18; i++) { const t = (i / 9 - 1) * 1.15; arc.push(onSurf([0.4, 0.9, 0], [0, Math.cos(t), Math.sin(t)], 0.009)); }
-  arc.unshift(V3(cup[1].p).addScaledVector(V3(cup[1].n), 0.022)); arc.push(V3(cup[0].p).addScaledVector(V3(cup[0].n), 0.022));
+  const F = accFit('phones'), s = F.s, arc = [], parts = [], cup = [1, -1].map((g) => restSDF.castOut(F.cup || F.c, [0, -0.05, g]));
+  for (let i = 0; i <= 18; i++) { const t = (i / 9 - 1) * F.span; arc.push(onSurf(F.c, [0, Math.cos(t), Math.sin(t)], 0.009)); }
+  arc.unshift(V3(cup[1].p).addScaledVector(V3(cup[1].n), 0.022 * s)); arc.push(V3(cup[0].p).addScaledVector(V3(cup[0].n), 0.022 * s));
   parts.push([tube(arc, 0.0072, false, 80), null, '#ffffff', 1]);
   for (const c of cup) {
-    const n = V3(c.n), q = new THREE.Quaternion().setFromUnitVectors(Y_AXIS, n), m = (d) => M4().compose(V3(c.p).addScaledVector(n, d), q, ONE3);
-    parts.push([new THREE.CylinderGeometry(0.031, 0.034, 0.022, 32), m(0.02), '#ffffff', 1]);
-    parts.push([new THREE.TorusGeometry(0.029, 0.0085, 10, 32).rotateX(Math.PI / 2), m(0.006), CREAM, 0]);
-    parts.push([new THREE.CylinderGeometry(0.021, 0.021, 0.006, 28), m(0.032), CREAM, 0]);
+    const n = V3(c.n), q = new THREE.Quaternion().setFromUnitVectors(Y_AXIS, n), m = (d) => M4().compose(V3(c.p).addScaledVector(n, d * s), q, ONE3);
+    parts.push([new THREE.CylinderGeometry(0.031 * s, 0.034 * s, 0.022 * s, 32), m(0.02), '#ffffff', 1]);
+    parts.push([new THREE.TorusGeometry(0.029 * s, 0.0085 * s, 10, 32).rotateX(Math.PI / 2), m(0.006), CREAM, 0]);
+    parts.push([new THREE.CylinderGeometry(0.021 * s, 0.021 * s, 0.006 * s, 28), m(0.032), CREAM, 0]);
   }
-  addRest('phones', mergeGeos(parts), V3(restSDF.castOut([0.4, 0.95, 0], [0, 1, 0]).p), { wob: [0.06, 16, 0.3, 0.2, 0, 0.02] });
+  addRest('phones', mergeGeos(parts), V3(restSDF.castOut(F.top, [0, 1, 0]).p), { wob: [0.06, 16, 0.3, 0.2, 0, 0.02] });
 }
 
-// kính tròn: mắt nằm hai bên đầu nên mỗi tròng là vòng phẳng vuông góc hướng nhìn của mắt, đẩy ra tới khi không chạm lông;
+// kính tròn: mỗi tròng là vòng phẳng vuông góc hướng nhìn của mắt, đẩy ra tới khi không chạm lông;
 // cầu kính vắt qua sống mũi, gọng ngắn ôm thái dương. Không có mặt kính để khỏi che đốm sáng trong mắt
 {
-  const parts = [], inner = [], R = 0.05, rim = '#d9d9d9';
+  const F = accFit('glasses'), parts = [], inner = [], R = F.R, rim = '#d9d9d9';
   for (const s of [1, -1]) {
     const c = V3([LM.eye.c[0], LM.eye.c[1], LM.eye.c[2] * s]);
     const ax = V3([LM.eye.n[0], LM.eye.n[1], LM.eye.n[2] * s]).multiplyScalar(0.62).add(V3([0.38, 0.06, 0])).normalize();
@@ -3022,19 +3125,19 @@ addAcc('horn', (() => {
     parts.push([tube(tp, 0.0036, false, 24), null, rim, 1]);
   }
   const br = [];
-  for (let i = 0; i <= 8; i++) { const p = inner[0].clone().lerp(inner[1], i / 8); p.y += Math.sin(i / 8 * Math.PI) * 0.01; br.push(snap(p, 0.013, true)); }
+  for (let i = 0; i <= 8; i++) { const p = inner[0].clone().lerp(inner[1], i / 8); p.y += Math.sin(i / 8 * Math.PI) * F.arch; br.push(snap(p, 0.013, true)); }
   parts.push([tube(br, 0.0042, false, 32), null, rim, 1]);
-  addRest('glasses', mergeGeos(parts), V3(restSDF.castOut([LM.eye.c[0] + 0.02, 0.95, 0], [0, 1, 0]).p), { up: [0.3, 1, 0], wob: [0.05, 22, 0.35, 0.12, 0, 0.03] });
+  addRest('glasses', mergeGeos(parts), V3(restSDF.castOut(F.top || [LM.eye.c[0] + 0.02, 0.95, 0], [0, 1, 0]).p), { up: [0.3, 1, 0], wob: [0.05, 22, 0.35, 0.12, 0, 0.03] });
 }
 
-// khăn: dải quanh cổ vẽ trong shader vải, ở đây là vạt tam giác rủ ôm ngực (đẩy ra khỏi SDF)
+// khăn: dải quanh cổ vẽ trong shader vải (BAND), ở đây là vạt tam giác rủ ôm ngực (đẩy ra khỏi SDF)
 {
-  const f = [0.743, -0.669], c0 = [0.255, 0.70, 0];
+  const F = accFit('bandana'), f = F.f, c0 = F.c;
   const top = (s) => restSDF.castOut(c0, [f[0] * Math.cos(s), f[1] * Math.cos(s), Math.sin(s)]);
-  const s0 = top(0), A = s0.p, H = 0.07, CL = 0.011, R = 8, C = 12;
+  const s0 = top(0), A = s0.p, H = F.H, CL = 0.011, R = 8, C = 12;
   const apex = [A[0] + 0.012, A[1] - H, 0], P = [], I = [], g = [0, 0, 0];
   for (let j = 0; j <= R; j++) for (let i = 0; i <= C; i++) {
-    const t = j / R, tp = top((i / C * 2 - 1) * 0.68).p;
+    const t = j / R, tp = top((i / C * 2 - 1) * F.span).p;
     const p = [lerp(tp[0], apex[0], t), lerp(tp[1], apex[1], t), lerp(tp[2], apex[2], t)];
     for (let k = 0; k < 6; k++) {
       const d = restSDF.sdf(p[0], p[1], p[2]);
@@ -3058,37 +3161,177 @@ addAcc('bowtie', (() => {
   for (let i = 0; i < p.count; i++) { const z = p.getZ(i), k = 0.22 + 0.78 * Math.abs(z) ** 0.7; p.setXYZ(i, p.getX(i) * 0.012 * (0.6 + 0.4 * k), p.getY(i) * 0.03 * k, z * 0.066); }
   w.computeVertexNormals();
   return mergeGeos([[w, null, '#ffffff', 3], [new THREE.SphereGeometry(1, 16, 12), M4().makeTranslation(0.006, 0, 0).multiply(M4().makeScale(0.0125, 0.0155, 0.013)), '#e6e6e6', 1]]);
-})(), { at: [0.25, 0.598, 0], dir: [1, -0.12, 0], up: (n) => [-n[0] * n[1], 1 - n[1] * n[1], -n[2] * n[1]], frame: 'neck', gap: -0.002, wob: [0.035, 11, 0.22, 0.45, 0.8, 0.3] });
+})(), { ...accFit('bowtie'), frame: 'neck', wob: [0.035, 11, 0.22, 0.45, 0.8, 0.3] });
 
-// ba lô: gai lưng chạy dọc giữa nên chia hai ngăn hai bên, quai xách vắt qua hàng gai, dây đeo vòng qua vai xuống ngực
+// ba lô: chia hai ngăn hai bên sống lưng (khủng long có hàng gai ở giữa), quai xách vắt qua sống lưng, dây đeo vòng qua vai xuống ngực
 {
-  const parts = [], top = [], straps = [];
+  const F = accFit('backpack'), k = F.s, parts = [], top = [], straps = [];
   for (const s of [1, -1]) {
-    const S = restSDF.castOut([0.07, 0.62, 0.02 * s], [-0.22, 1, 0.56 * s]), n = V3(S.n);
+    const S = restSDF.castOut([F.o[0], F.o[1], F.o[2] * s], [F.dir[0], F.dir[1], F.dir[2] * s]), n = V3(S.n);
     const X = V3([1, 0, 0]).addScaledVector(n, -n.x).normalize(), Z = new THREE.Vector3().crossVectors(X, n);
-    const B = (u, h, w) => M4().makeBasis(X, n, Z).setPosition(V3(S.p).addScaledVector(X, u).addScaledVector(n, h).addScaledVector(Z, w));
-    const pocket = blob(0.056, 0.034, 0.04, 0.55).applyMatrix4(B(0, 0.022, 0)), pp = pocket.attributes.position;
+    const B = (u, h, w) => M4().makeBasis(X, n, Z).setPosition(V3(S.p).addScaledVector(X, u * k).addScaledVector(n, h * k).addScaledVector(Z, w * k));
+    const pocket = blob(0.056 * k, 0.034 * k, 0.04 * k, 0.55).applyMatrix4(B(0, 0.022, 0)), pp = pocket.attributes.position;
     // đáy túi ôm theo lưng tròn
     for (let i = 0; i < pp.count; i++) { const q = snap(V3([pp.getX(i), pp.getY(i), pp.getZ(i)]), 0.002, true); pp.setXYZ(i, q.x, q.y, q.z); }
     pocket.computeVertexNormals();
-    parts.push([pocket, null, '#ffffff', 1], [blob(0.036, 0.009, 0.044, 0.55), B(0.022, 0.056, 0), CREAM, 0], [new THREE.SphereGeometry(0.0065, 12, 8), B(-0.01, 0.065, 0), '#e8e8e8', 1]);
-    const e = V3(S.p).addScaledVector(X, 0.034).addScaledVector(n, 0.048);
-    e.z -= s * 0.026;
+    parts.push([pocket, null, '#ffffff', 1], [blob(0.036 * k, 0.009 * k, 0.044 * k, 0.55), B(0.022, 0.056, 0), CREAM, 0], [new THREE.SphereGeometry(0.0065 * k, 12, 8), B(-0.01, 0.065, 0), '#e8e8e8', 1]);
+    const e = V3(S.p).addScaledVector(X, 0.034 * k).addScaledVector(n, 0.048 * k);
+    e.z -= s * 0.026 * k;
     top.push(e);
-    const D = [[-0.3, 1, 0.42], [0.15, 0.75, 0.8], [0.75, 0.25, 0.62], [0.95, -0.35, 0.42]], sp = [];
+    const D = F.D, sp = [];
     for (let i = 0; i <= 24; i++) {
-      const t = i / 24 * 3, k = Math.min(2, Math.floor(t)), f = t - k;
-      sp.push(snap(onSurf([0.17, 0.62, 0], [lerp(D[k][0], D[k + 1][0], f), lerp(D[k][1], D[k + 1][1], f), lerp(D[k][2], D[k + 1][2], f) * s], 0.012), 0.012));
+      const t = i / 24 * 3, j = Math.min(2, Math.floor(t)), f = t - j;
+      sp.push(snap(onSurf(F.strap, [lerp(D[j][0], D[j + 1][0], f), lerp(D[j][1], D[j + 1][1], f), lerp(D[j][2], D[j + 1][2], f) * s], 0.012), 0.012));
     }
     straps.push([strap(sp, 0.014, 0.0035), null, '#e8e8e8', 1]);
   }
   const mx = (top[0].x + top[1].x) / 2;
-  let ridge = 1.0;
-  while (ridge > 0.6 && restSDF.sdf(mx, ridge, 0) > 0) ridge -= 0.002;
+  let ridge = F.ridge[0];
+  while (ridge > F.ridge[1] && restSDF.sdf(mx, ridge, 0) > 0) ridge -= 0.002;
   const hp = [top[0], V3([mx, ridge + 0.01, 0.03]), V3([mx, ridge + 0.018, 0]), V3([mx, ridge + 0.01, -0.03]), top[1]];
   parts.push([tube(hp, 0.0045, false, 30), null, '#e8e8e8', 1]);
-  addRest('backpack', mergeGeos(parts), V3([0.06, 0.7, 0]), { frame: 'chest', wob: [0.07, 12, 0.25, 0.3, 0.5, 0.03] });
+  addRest('backpack', mergeGeos(parts), V3(F.top), { frame: 'chest', wob: [0.07, 12, 0.25, 0.3, 0.5, 0.03] });
   addSkin('backpack', mergeGeos(straps));
+}
+
+// đùi gà đội đầu (như sticker trứng bắc thảo): đùi nằm ngang trên đỉnh, xương chĩa chéo ra sau
+addAcc('drumstick', (() => {
+  const meat = blob(0.058, 0.043, 0.045, 0.9, 28, 18), mp = meat.attributes.position;
+  // đầu thịt phình, thon dần về phía xương
+  for (let i = 0; i < mp.count; i++) { const x = mp.getX(i), k = 1 - 0.32 * sstep(0.01, -0.058, x); mp.setY(i, mp.getY(i) * k); mp.setZ(i, mp.getZ(i) * k); }
+  meat.computeVertexNormals();
+  const bone = new THREE.CylinderGeometry(0.0095, 0.0115, 0.06, 14).rotateZ(Math.PI / 2);
+  const knob = new THREE.SphereGeometry(0.0135, 14, 10);
+  return mergeGeos([
+    [meat, M4().makeTranslation(0.012, 0.043, 0), '#b8673d', 0],
+    [bone, M4().makeTranslation(-0.068, 0.04, 0), '#f3ead8', 0],
+    [knob, M4().makeTranslation(-0.1, 0.04, 0.0105), '#f3ead8', 0],
+    [knob, M4().makeTranslation(-0.1, 0.04, -0.0105), '#f3ead8', 0],
+  ]);
+})(), { ...accFit('drumstick'), wob: [0.05, 12, 0.2, 0.4, 1.0, 0.25] });
+
+// khăn trùm caro: tấm vải ôm đầu từ trán qua đỉnh xuống gáy, chừa khuôn mặt (nón quanh hướng +x), hai dải vòng xuống buộc nơ.
+// Lưới (s, t): s = góc nghiêng sang hai bên, t = góc đi từ trước qua đỉnh ra sau trong mặt phẳng dọc, nên không có điểm dồn ở gáy
+{
+  const F = accFit('scarf'), H = V3(F.H), NS = 32, NT = 24, SM = 1.3, cosO = Math.cos(F.open), rows = [];
+  const dir = (s, t) => V3([Math.cos(t) * Math.cos(s), Math.sin(t) * Math.cos(s), Math.sin(s)]);
+  for (let i = 0; i <= NS; i++) {
+    const sa = (i / NS * 2 - 1) * SM, cs = Math.cos(sa);
+    // mép trước: hướng vừa ra khỏi nón chừa mặt
+    const t0 = cs > cosO ? Math.max(F.t[0], Math.acos(cosO / cs)) : F.t[0], row = [];
+    for (let j = 0; j <= NT; j++) row.push({ t: lerp(t0, F.t[1], j / NT), p: V3(restSDF.castOut(F.H, dir(sa, lerp(t0, F.t[1], j / NT)).toArray()).p) });
+    rows.push({ sa, row });
+  }
+  // làm mượt chỗ vải vắt qua gai/chỏm lông rồi đẩy ra khỏi lông
+  for (let it = 0; it < 3; it++) for (let i = 1; i < NS; i++) for (let j = 1; j < NT; j++) {
+    const q = rows[i].row[j].p;
+    q.lerp(rows[i - 1].row[j].p.clone().add(rows[i + 1].row[j].p).add(rows[i].row[j - 1].p).add(rows[i].row[j + 1].p).multiplyScalar(0.25), 0.5);
+  }
+  const P = [], C = [], I = [], rr = rows[NS / 2].row[NT >> 1].p.distanceTo(H), k = rr / 0.034;
+  for (const { sa, row } of rows) for (const { t, p } of row) { snap(p, 0.009, true); P.push(p.x, p.y, p.z); C.push(sa * k, t * k, 0, 6); }
+  for (let i = 0; i < NS; i++) for (let j = 0; j < NT; j++) { const a = i * (NT + 1) + j, b = a + NT + 1; I.push(a, b, a + 1, a + 1, b, b + 1); }
+  const cloth = new THREE.BufferGeometry();
+  cloth.setAttribute('position', new THREE.Float32BufferAttribute(P, 3));
+  cloth.setAttribute('dcol', new THREE.Float32BufferAttribute(C, 4));
+  cloth.setIndex(I);
+  cloth.computeVertexNormals();
+  const hem = rows.map(({ row }) => snap(row[0].p.clone(), 0.012, true));
+  const K = restSDF.castOut(F.H, F.knot), Kp = V3(K.p).addScaledVector(V3(K.n), 0.012);
+  // dải buộc: dải vải dẹt căng từ hai góc dưới tới nút (qua điểm via nếu có, để né miệng), đẩy ra khỏi thân rồi làm mượt.
+  // Không bắn tia từ tâm đầu vì tia lọt vào khe miệng / trúng tay làm dải gãy khúc
+  const ties = [rows[0], rows[NS]].map(({ row }) => {
+    const a = row[0].p, way = F.via ? [a, V3(restSDF.castOut(F.H, [F.via[0], F.via[1], F.via[2] * Math.sign(a.z)]).p), Kp] : [a, Kp], n = 20 / (way.length - 1), pts = [];
+    for (let k = 1; k < way.length; k++) for (let i = 0; i < n; i++) pts.push(snap(way[k - 1].clone().lerp(way[k], i / n), 0.01, true));
+    pts.push(Kp.clone());
+    for (let it = 0; it < 4; it++) for (let i = 1; i < pts.length - 1; i++) snap(pts[i].lerp(pts[i - 1].clone().add(pts[i + 1]).multiplyScalar(0.5), 0.5), 0.01, true);
+    return [strap(pts, 0.013, 0.004), null, '#5aa35f', 0];
+  });
+  // tấm vải giữ dcol riêng (toạ độ caro) nên không đi qua mergeGeos; viền cùng gốc, cùng lò xo nên chuyển động khớp nhau.
+  // Dải buộc vắt qua má xuống cằm (miệng há thì mặt giãn) nên mỗi đỉnh bám lưới riêng như dây ba lô
+  const SA = V3(restSDF.castOut(F.H, [0, 1, 0]).p), so = { wob: [0.06, 13, 0.25, 0.3, 0.6, 0.02] };
+  addRest('scarf', cloth, SA, so);
+  addRest('scarf', mergeGeos([[tube(hem, 0.0065, false, 160), null, '#f4f6ec', 0]]), SA.clone(), so);
+  addSkin('scarf', mergeGeos(ties), true);
+  // nơ buộc dưới cằm: hai cánh + nút + hai đuôi rủ, có lò xo riêng nên đung đưa
+  const prof = [];
+  for (let i = 0; i <= 16; i++) { const t = i / 16; prof.push(new THREE.Vector2(0.03 * (0.32 + 0.68 * t) * Math.sin(Math.PI * t) ** 0.55 + 1e-4, t * 0.056)); }
+  const wing = new THREE.LatheGeometry(prof, 20).applyMatrix4(M4().makeBasis(V3([0, 1, 0]), V3([0, 0, 1]), V3([1, 0, 0]))).scale(0.42, 1, 1);
+  const tail = blob(0.006, 0.026, 0.011, 0.8, 14, 10);
+  const knot = mergeGeos([
+    [wing, M4().makeRotationY(-0.25), '#6cbf6a', 0], [wing, M4().makeRotationY(Math.PI + 0.25), '#6cbf6a', 0],
+    [new THREE.SphereGeometry(1, 16, 12), M4().makeScale(0.013, 0.015, 0.014), '#4f9d55', 0],
+    [tail, M4().makeTranslation(0, -0.024, 0.012).multiply(M4().makeRotationX(0.35)), '#6cbf6a', 0], [tail, M4().makeTranslation(0, -0.024, -0.012).multiply(M4().makeRotationX(-0.35)), '#6cbf6a', 0],
+  ]);
+  // mặt nơ (trục x mỏng của hình) quay ra ngoài theo pháp tuyến, hai cánh dang ngang
+  const nK = V3(K.n), U0 = V3([0, 1, 0]).addScaledVector(nK, -nK.y).normalize(), Z = new THREE.Vector3().crossVectors(nK, U0);
+  addPiece('scarf', knot, Kp.toArray(), { frame: 'neck', q: new THREE.Quaternion().setFromRotationMatrix(M4().makeBasis(nK, U0, Z)), up: U0.toArray(), n: K.n, wob: [0.04, 9, 0.2, 0.6, 1.5, 0.35], jaw: true });
+}
+
+// kính râm hồng mắt mèo: tròng tối bóng che mắt, gọng hồng vểnh ở góc trên ngoài, cầu kính và càng như kính tròn
+{
+  const F = accFit('shades'), R = F.R, frame = [], lens = [], inner = [];
+  for (const s of [1, -1]) {
+    const c = V3([LM.eye.c[0], LM.eye.c[1], LM.eye.c[2] * s]);
+    const ax = V3([LM.eye.n[0], LM.eye.n[1], LM.eye.n[2] * s]).multiplyScalar(0.62).add(V3([0.38, 0.06, 0])).normalize();
+    const u = V3([0, 1, 0]).addScaledVector(ax, -ax.y).normalize(), v = new THREE.Vector3().crossVectors(ax, u);
+    // v hướng ra thái dương ở cả hai bên
+    if (v.z * s < 0) v.negate();
+    const rad = (a) => R * (1 + 0.42 * Math.max(0, Math.cos(a - 0.75)) ** 5) * (Math.sin(a) < 0 ? 0.82 : 1);
+    const ring = (t, k = 1) => Array.from({ length: 36 }, (_, i) => { const a = i / 36 * Math.PI * 2; return c.clone().addScaledVector(ax, t).addScaledVector(u, Math.sin(a) * rad(a) * k * 0.86).addScaledVector(v, Math.cos(a) * rad(a) * k * 1.12); });
+    // đẩy ra tới khi cả vành, vòng giữa và tâm tròng đều không chạm lông (mặt đầu lồi nên tâm thường gần nhất)
+    // và tròng nằm ngoài nhãn cầu + mí (mesh riêng, không có trong SDF; mí bán kính 1.12r) để mắt không lòi qua kính
+    let t = 0.01;
+    const clear = (t) => t > LM.eye.r * 1.3 && [...ring(t), ...ring(t, 0.5), c.clone().addScaledVector(ax, t)].every((p) => restSDF.sdf(p.x, p.y, p.z) > 0.008);
+    while (!clear(t) && t < 0.08) t += 0.002;
+    const pts = ring(t), ctr = c.clone().addScaledVector(ax, t);
+    frame.push([tube(pts, 0.0055, true, 96), null, '#ff86b4', 0]);
+    // tâm tròng phồng ra một chút: mặt kính cong nên ánh phản chiếu thành vệt sáng chứ không trắng loá cả mặt phẳng
+    const dome = ctr.addScaledVector(ax, 0.005), LP = [dome.x, dome.y, dome.z], LI = [];
+    for (const p of pts) LP.push(p.x, p.y, p.z);
+    for (let i = 0; i < 36; i++) LI.push(0, 1 + i, 1 + (i + 1) % 36);
+    const lg = new THREE.BufferGeometry();
+    lg.setAttribute('position', new THREE.Float32BufferAttribute(LP, 3));
+    lg.setIndex(LI);
+    lg.computeVertexNormals();
+    lens.push(lg);
+    inner.push(pts.reduce((a, p) => (p.z * s - p.y * 0.2 < a.z * s - a.y * 0.2 ? p : a)));
+    const back = pts.reduce((a, p) => (p.x < a.x ? p : a)), tp = [back];
+    for (let k = 1; k <= 4; k++) tp.push(snap(back.clone().add(V3([-0.024 * k, 0.003 * k, 0])), 0.012));
+    frame.push([tube(tp, 0.004, false, 24), null, '#ff86b4', 0]);
+  }
+  const br = [];
+  for (let i = 0; i <= 8; i++) { const p = inner[0].clone().lerp(inner[1], i / 8); p.y += Math.sin(i / 8 * Math.PI) * 0.008; br.push(snap(p, 0.013, true)); }
+  frame.push([tube(br, 0.005, false, 32), null, '#ff86b4', 0]);
+  const A = V3(restSDF.castOut([LM.eye.c[0] - 0.05, LM.eye.c[1], 0], [0, 1, 0]).p), opt = { up: [0.3, 1, 0], wob: [0.05, 22, 0.35, 0.12, 0, 0.03] };
+  addRest('shades', mergeGeos(frame), A, opt);
+  const lg = mergeGeos(lens.map((g) => [g, null, '#ffffff', 0]));
+  addRest('shades', lg, A.clone(), { ...opt, mat: lensMat });
+}
+
+// bó tulip cầm ở tay phải: đầu tay là đỉnh thấp + nhô trước nhất của phần lưới đi theo xương tay phải
+{
+  const F = accFit('bouquet'), k = F.s, mp = R.mesh.pos, mr = R.mesh.rig, mn = R.mesh.nor;
+  let best = -1e9, hv = -1;
+  for (let v = 0; v < mr.length / 3; v++) if (mr[v * 3 + 2] > 0.9) { const sc = -mp[v * 3 + 1] + 0.5 * mp[v * 3]; if (sc > best) { best = sc; hv = v; } }
+  const tulip = new THREE.LatheGeometry([[0.0001, 0], [0.012, 0.004], [0.017, 0.014], [0.016, 0.026], [0.012, 0.035], [0.0105, 0.037]].map((q) => new THREE.Vector2(...q)), 18);
+  const tp = tulip.attributes.position;
+  // ba cánh: mép trên nhấp nhô theo góc
+  for (let i = 0; i < tp.count; i++) { const y = tp.getY(i); if (y > 0.025) tp.setY(i, y + 0.005 * Math.cos(3 * Math.atan2(tp.getZ(i), tp.getX(i)))); }
+  tulip.computeVertexNormals();
+  const parts = [], pinks = ['#ff8fb3', '#ff6f9c', '#ffb3cc', '#ff7fa8', '#ffc2d6', '#ff94b8'];
+  for (let i = 0; i < 6; i++) {
+    const a = i / 6 * Math.PI * 2 + 0.4, rr = i ? 0.024 : 0, h = 0.105 + (i % 3) * 0.012 + (i ? 0 : 0.02);
+    const top = V3([Math.cos(a) * rr, h, Math.sin(a) * rr]);
+    parts.push([tube([V3([0, -0.035, 0]), V3([Math.cos(a) * rr * 0.3, 0.03, Math.sin(a) * rr * 0.3]), top], 0.0028, false, 12), null, '#5f9e4c', 0]);
+    const q = new THREE.Quaternion().setFromUnitVectors(Y_AXIS, top.clone().sub(V3([0, 0.02, 0])).normalize());
+    parts.push([tulip, M4().compose(top, q, ONE3), pinks[i], 0]);
+  }
+  for (const a of [0.3, 2.4, 4.4]) parts.push([blob(0.006, 0.05, 0.012, 0.9, 12, 10), M4().makeRotationY(a).multiply(M4().makeTranslation(0.012, 0.045, 0)).multiply(M4().makeRotationZ(-0.25)), '#7dba5c', 0]);
+  parts.push([new THREE.TorusGeometry(0.0115, 0.0032, 8, 24).rotateX(Math.PI / 2), M4().makeTranslation(0, 0.004, 0), '#d8b585', 0], [new THREE.TorusGeometry(0.0118, 0.0032, 8, 24).rotateX(Math.PI / 2), M4().makeTranslation(0, -0.004, 0), '#d8b585', 0]);
+  const g = mergeGeos(parts).scale(k, k, k);
+  const n = V3([mn[hv * 3], mn[hv * 3 + 1], mn[hv * 3 + 2]]), at = V3([mp[hv * 3], mp[hv * 3 + 1], mp[hv * 3 + 2]]).addScaledVector(n, 0.012 * k);
+  const up = V3([0.2, 1, 0.35]).normalize();
+  addPiece('bouquet', g, at.toArray(), { frame: 'hand', q: new THREE.Quaternion().setFromUnitVectors(Y_AXIS, up), up: up.toArray(), wob: [0.1 * k, 10, 0.2, 0.35, 0.8, 0.25] });
 }
 
 // nhãn vải ở mông (tush tag): vải kem in trái tim, treo lủng lẳng dưới gốc đuôi
@@ -3109,7 +3352,7 @@ deco.tag = (() => {
   const mesh = new THREE.Mesh(geo, new THREE.MeshPhysicalNodeMaterial({ map: tex, roughness: 0.8, sheen: 0.5, sheenRoughness: 0.5, side: THREE.DoubleSide, alphaTest: 0.5 }));
   mesh.matrixAutoUpdate = false;
   scene.add(mesh);
-  const s = restSDF.castOut([-0.3, 0.46, 0], [0, -1, 0.4]), n = new THREE.Vector3(...s.n);
+  const F = accFit('tag'), s = restSDF.castOut(F.at, F.dir), n = new THREE.Vector3(...s.n);
   return { mesh, n, b: bindPoint([s.p[0] - n.x * 0.004, s.p[1] - n.y * 0.004, s.p[2] - n.z * 0.004]), hang: new THREE.Vector3(-0.25, -1, 0).addScaledVector(n, 0.5).normalize(), w: makeWobble(0.045, 9, 0.22, 0.6, 0, 0.9) };
 })();
 
@@ -3137,15 +3380,20 @@ function updateDeco() {
     if (it.skin) {
       const p = it.mesh.geometry.attributes.position, n = it.mesh.geometry.attributes.normal;
       for (let i = 0; i < it.skin.length; i++) {
-        skinBound(it.skin[i], _da); p.setXYZ(i, _da.x, _da.y, _da.z);
+        skinBound(it.skin[i], _da);
+        if (it.jw?.[i]) jawRig(_da, it.jw[i]);
+        p.setXYZ(i, _da.x, _da.y, _da.z);
         _db.fromArray(it.n0, i * 3).applyQuaternion(frames.chest); n.setXYZ(i, _db.x, _db.y, _db.z);
       }
       p.needsUpdate = true; n.needsUpdate = true;
       continue;
     }
-    // vạt khăn/nơ cổ nằm ở cổ họng: nửa theo ngực, nửa theo đầu
-    const fq = it.frame === 'head' ? frames.head : it.frame === 'chest' ? frames.chest : _dq2.copy(frames.chest).slerp(frames.head, 0.5);
+    // vạt khăn/nơ cổ nằm ở cổ họng: nửa theo ngực, nửa theo đầu; món cầm tay đi theo tay quanh vai như trong shader
+    // nhưng cổ tay bù lại, chỉ nghiêng ~40% góc tay: giơ tay lên mặt (khóc, dụi mắt) hoa vẫn chĩa lên chứ không đâm vào mặt
+    let fq = it.frame === 'head' ? frames.head : it.frame === 'chest' ? frames.chest : it.frame === 'hand' ? _dq2.setFromRotationMatrix(rot.armR).slerp(Q_ID, 0.6).multiply(frames.chest) : _dq2.copy(frames.chest).slerp(frames.head, 0.5);
     skinBound(it.b, _da);
+    if (it.frame === 'hand') _da.sub(U.armRPivot.value).applyMatrix4(rot.armR).add(U.armRPivot.value);
+    if (it.jw) { jawRig(_da, it.jw); fq = _dq3.setFromRotationMatrix(rot.jaw).slerp(Q_ID, 1 - it.jw).multiply(fq); }
     _db.copy(it.up).applyQuaternion(fq);
     _dc.copy(it.n).applyQuaternion(fq);
     if (it.kick) { it.kick = 0; wobble(it.w, _da, _db, 0); it.w.u.set(Math.random() - 0.5, 0.2, Math.random() - 0.5).multiplyScalar(it.w.L * 9); }
@@ -3157,7 +3405,7 @@ function updateDeco() {
   }
 }
 
-const ACC_KEY = 'plush-rex-acc';
+const ACC_KEY = `plush-acc-${CHAR.id}`;
 // list: các món muốn đeo theo thứ tự chọn; món sau thay món trước nếu trùng chỗ. boing = món vừa đeo (nảy tưng)
 function setAcc(list, boing) {
   const w = deco.worn, was = new Set(w);
@@ -3173,6 +3421,7 @@ function setAcc(list, boing) {
   }
   deco.live = [...w].flatMap((k) => deco.items[k]);
   U.bandana.value = w.has('bandana') ? 1 : 0;
+  for (const k in ANCH.cover) for (const m of ANCH.cover[k]()) m.visible = !Object.keys(ANCH.cover).some((c) => w.has(c));
   $$('[data-acc]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.acc === 'none' ? !w.size : w.has(b.dataset.acc))));
   try { localStorage.setItem(ACC_KEY, JSON.stringify([...w])); } catch (e) { /* storage bị chặn (private mode) */ }
 }
@@ -3183,13 +3432,15 @@ $$('[data-acc]').forEach((b) => b.addEventListener('click', () => {
   if (!on && deco.items[k]) popEmoji(skinBound(deco.items[k][0].b).addScaledVector(Y_AXIS, 0.07), '✨');
 }));
 {
-  let a = ['bow'];
+  let a = ANCH.wear;
   try {
-    const s = localStorage.getItem(ACC_KEY);
+    // khoá cũ 'plush-rex-acc' có từ trước khi có nhiều nhân vật, chỉ thuộc về khủng long
+    const s = localStorage.getItem(ACC_KEY) ?? (CHAR.id === 'rex' ? localStorage.getItem('plush-rex-acc') : null);
     // bản cũ lưu một chuỗi ('bow', 'none'…), bản mới lưu mảng JSON
     if (s) a = s[0] === '[' ? JSON.parse(s) : s === 'none' ? [] : [s];
   } catch (e) { /* storage bị chặn hoặc dữ liệu hỏng */ }
-  setAcc(Array.isArray(a) ? a : ['bow']);
+  if (!CHAR.acc) { a = []; $('[data-acc]').closest('.group').hidden = true; }
+  setAcc(Array.isArray(a) ? a : ANCH.wear);
 }
 
 // ------------------------------------------------------------------ floor (shadow catcher + felt mat)
@@ -5311,14 +5562,9 @@ function updateBubble() {
 Object.assign(STATE_TEXT, CHAR.text);
 teeth.visible = teethB.length > 0;
 if (LM.tail) { B.tailMid = bindPoint(LM.tail[0]); B.tailTip = bindPoint(LM.tail[1]); }
-// phụ kiện đang gắn theo mốc của khủng long: nhân vật chưa có chỗ gắn thì ẩn cả nhóm, giữ nguyên lựa chọn đã lưu
-if (!CHAR.acc) {
-  for (const k in deco.items) for (const it of deco.items[k]) it.mesh.visible = false;
-  deco.live = [];
-  if (U.bandana) U.bandana.value = 0;
-  $('[data-acc]')?.closest('.group')?.setAttribute('hidden', '');
-}
 CHAR.setup();
+// mesh riêng của nhân vật (tóc trứng) chỉ có sau setup: áp lại bộ phụ kiện để món che kín giấu được nó
+setAcc([...deco.worn]);
 
 // ------------------------------------------------------------------ main loop
 applyFabric(settings.fabric);
