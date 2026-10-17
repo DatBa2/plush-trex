@@ -221,6 +221,8 @@ button, input { font: inherit; color: inherit; }
 .dance-btn[aria-pressed="true"] .emo { animation: dance-bop 0.45s ease-in-out infinite alternate; }
 @keyframes dance-bop { from { transform: rotate(-12deg); } to { transform: rotate(12deg) translateY(-2px); } }
 @media (prefers-reduced-motion: reduce) { .dance-btn:hover .emo { transform: none; } .dance-btn[aria-pressed="true"] .emo { animation: none; } }
+/* trò của trứng: nhãn dài ("Lướt điện thoại") được xuống dòng thay vì tràn ô */
+.dance-btn[data-egg] .label { white-space: normal; text-align: center; }
 
 /* ---------- readouts ---------- */
 .readouts {
@@ -534,6 +536,24 @@ details code { font-family: ui-monospace, "Cascadia Mono", Menlo, monospace; fon
         <button class="btn dance-btn" data-dance="ballet" aria-pressed="false"><span class="emo" aria-hidden="true">🩰</span><span class="label">Ba lê</span></button>
         <button class="btn dance-btn" data-dance="horse" aria-pressed="false"><span class="emo" aria-hidden="true">🐴</span><span class="label">Cưỡi ngựa</span></button>
         <button class="btn dance-btn" data-dance="shuffle" aria-pressed="false"><span class="emo" aria-hidden="true">👣</span><span class="label">Bước ngang</span></button>
+      </div>
+    </div>
+
+    <div class="group" id="egg-tricks" hidden>
+      <h2>Trò của trứng</h2>
+      <div class="actions" role="group" aria-label="Trò của trứng">
+        <button class="btn dance-btn" data-egg="sing" aria-pressed="false"><span class="emo" aria-hidden="true">🎤</span><span class="label">Hát</span></button>
+        <button class="btn dance-btn" data-egg="like" aria-pressed="false"><span class="emo" aria-hidden="true">👍</span><span class="label">Like</span></button>
+        <button class="btn dance-btn" data-egg="lixi" aria-pressed="false"><span class="emo" aria-hidden="true">🧧</span><span class="label">Lì xì</span></button>
+        <button class="btn dance-btn" data-egg="phone" aria-pressed="false"><span class="emo" aria-hidden="true">📱</span><span class="label">Lướt điện thoại</span></button>
+        <button class="btn dance-btn" data-egg="study" aria-pressed="false"><span class="emo" aria-hidden="true">📖</span><span class="label">Học bài</span></button>
+        <button class="btn dance-btn" data-egg="shower" aria-pressed="false"><span class="emo" aria-hidden="true">🚿</span><span class="label">Tắm</span></button>
+        <button class="btn dance-btn" data-egg="cover" aria-pressed="false"><span class="emo" aria-hidden="true">🙈</span><span class="label">Che mặt</span></button>
+        <button class="btn dance-btn" data-egg="smug" aria-pressed="false"><span class="emo" aria-hidden="true">😏</span><span class="label">Cười đểu</span></button>
+        <button class="btn dance-btn" data-egg="shy" aria-pressed="false"><span class="emo" aria-hidden="true">😳</span><span class="label">Ngại ngùng</span></button>
+        <button class="btn dance-btn" data-egg="grumpy" aria-pressed="false"><span class="emo" aria-hidden="true">😤</span><span class="label">Giận dỗi</span></button>
+        <button class="btn dance-btn" data-egg="confused" aria-pressed="false"><span class="emo" aria-hidden="true">❓</span><span class="label">Ngơ ngác</span></button>
+        <button class="btn dance-btn" data-egg="flat" aria-pressed="false"><span class="emo" aria-hidden="true">🫠</span><span class="label">Nằm ẹp</span></button>
       </div>
     </div>
 
@@ -1048,10 +1068,9 @@ function duckLabel(mesh, LM) {
 }
 
 // ---------------------------------------------------------------- egg
-// Trứng bắc thảo: một cục tròn hơi phình đáy, mũi đen loang lổ, miệng cười rộng có hàm, tay sợi bún, chân lũn cũn
+// Trứng bắc thảo: một cục tròn hơi phình đáy, mũi đen loang lổ, miệng cười rộng có hàm, chân lũn cũn.
+// Tay sợi bún không nằm trong SDF: ô lưới 0.125 quá thô so với sợi tay 0.02 nên xoay bản lề làm rách vai; main thread vẽ tay bằng ống riêng (ET)
 const EG = {
-  ARM: [makeCone([0.04, 0.5, 0.33], [0.09, 0.44, 0.45], 0.026, 0.022), makeCone([0.09, 0.44, 0.45], [0.13, 0.35, 0.49], 0.022, 0.02)],
-  HAND: [0.14, 0.325, 0.495],
   // mũi loang: các thùy lệch nhau (không đối xứng) cho ra vết mực nhoè; [dy, dz, bán kính]
   LOBES: [[0, 0, 0.047], [0.034, 0.036, 0.029], [0.034, -0.034, 0.027], [-0.031, 0.04, 0.027], [-0.036, -0.034, 0.029], [0.052, 0.004, 0.02], [-0.05, -0.004, 0.022], [0.0, 0.057, 0.018], [0.004, -0.058, 0.019]],
   CORNER: 0.2, MW: 0.19, H: 0.016,
@@ -1066,11 +1085,6 @@ function eggSdf(x, y, z, L) {
   let dLeg = 1e9;
   if (y < 0.24) dLeg = smax(sdEllipsoid(x - 0.035, y - 0.075, az - 0.15, 0.085, 0.09, 0.075), -y, 0.012);
   let d = smin(dBody, dLeg, 0.05);
-  let dArm = 1e9;
-  if (az > 0.25 && y > 0.22 && y < 0.6 && x > -0.1) {
-    dArm = Math.min(sdCone(EG.ARM[0], x, y, az), sdCone(EG.ARM[1], x, y, az), sdSphere(x - EG.HAND[0], y - EG.HAND[1], az - EG.HAND[2], 0.033));
-    d = smin(d, dArm, 0.025);
-  }
   let dNose = 1e9;
   const N = EG.nose;
   if (N && x > 0.25 && Math.abs(y - N[1]) < 0.1 && az < 0.1) {
@@ -1082,7 +1096,7 @@ function eggSdf(x, y, z, L) {
     dSlit = smax(smax((Math.abs(y - eggMouthY(z)) - EG.H) * 0.93, EG.CORNER - x, 0.02), az - EG.MW, 0.03);
     d = smax(d, -dSlit, 0.008);
   }
-  if (L) { L.body = dBody; L.leg = dLeg; L.arm = dArm; L.nose = dNose; L.slit = dSlit; }
+  if (L) { L.body = dBody; L.leg = dLeg; L.nose = dNose; L.slit = dSlit; }
   return d;
 }
 function eggFeatures() {
@@ -1103,8 +1117,10 @@ function eggFeatures() {
     snout: N.slice(),
     // đồ ăn ngậm ở ngay môi: cục bông quá to, ngậm sâu thì đùi gà lọt thỏm vào trong
     mouth: [front(eggMouthY(0) + EG.H + 0.01, 0) - 0.005, eggMouthY(0), 0],
-    jawPivot: [EG.CORNER - 0.005, eggMouthY(0) - 0.01, 0],
-    shoulder: [0.04, 0.49, 0.36],
+    // khớp hàm xa phía sau và thấp ngang bụng: xoay góc nhỏ thì cả mặt dưới tụt gần như thẳng xuống;
+    // khớp ngang miệng thì bụng dưới bị xoay lùi vào trong thành vết lõm (adjust thu nhỏ góc hàm cho khớp đòn bẩy dài)
+    jawPivot: [-0.35, 0.25, 0],
+    shoulder: [0.03, 0.47, 0.37],
     tail: [[-0.25, 0.25, 0], [-0.3, 0.4, 0]],
     tongue: [EG.CORNER + 0.07, eggMouthY(0) - EG.H - 0.008, 0],
     hair: { p: hair.p, n: hair.n },
@@ -1118,23 +1134,23 @@ function eggLabel(mesh, LM) {
   for (let v = 0; v < nv; v++) {
     const x = mesh.pos[v * 3], y = mesh.pos[v * 3 + 1], z = mesh.pos[v * 3 + 2], az = Math.abs(z);
     eggSdf(x, y, z, L);
-    // lòng miệng chỉ ở phần sâu trong khe, mép khe vẫn màu vải như môi
-    const mouth = sstep(0.006, 0.0015, Math.abs(L.slit)) * sstep(-0.004, -0.012, L.body);
+    // cả vách khe là lòng miệng (há to thì vách giãn ra thành khoang tối), chỉ chừa vành môi ~5 mm màu vải
+    const mouth = sstep(0.006, 0.002, Math.abs(L.slit)) * sstep(-0.002, -0.007, L.body);
     const nose = sstep(0.003, -0.003, L.nose - L.body);
     mat[v * 4] = mouth; mat[v * 4 + 3] = nose;
-    rig[v * 3] = sstep(EG.CORNER - 0.02, EG.CORNER + 0.06, x) * sstep(0, -0.01, y - eggMouthY(z)) * sstep(0.28, 0.37, y) * sstep(EG.MW + 0.07, EG.MW - 0.01, az);
-    const armW = sstep(0.012, -0.01, L.arm - L.body);
-    rig[v * 3 + 1] = z < 0 ? armW : 0; rig[v * 3 + 2] = z > 0 ? armW : 0;
+    // hàm nhạt dần tuyến tính xuống tận đáy: mặt dưới co đều (độ dốc trọng số × độ tụt < 1 nên không gập thành nếp ở cằm);
+    // theo bề ngang: đủ 1 tới chiếc răng dưới ngoài cùng (|z| = 0.1, răng xoay trọn theo hàm) rồi thu về 0 ở khoé cho miệng há tròn
+    rig[v * 3] = sstep(EG.CORNER - 0.03, EG.CORNER + 0.07, x) * sstep(0, -0.012, y - eggMouthY(z)) * clamp((y - 0.02) / (eggMouthY(z) - 0.05), 0, 1) * sstep(EG.MW + 0.01, 0.1, az);
     spineProject(SP, x, y, sp);
     uv[v * 2] = sp.s; uv[v * 2 + 1] = Math.atan2(z, x) / (2 * Math.PI) + 0.5;
-    const legDom = sstep(-0.01, 0.01, L.body - L.leg), armDom = sstep(-0.01, 0.01, L.body - L.arm);
+    const legDom = sstep(-0.01, 0.01, L.body - L.leg);
     if (legDom > 0.5) {
       uv[v * 2] = SP.len + 0.05 + (z > 0 ? 0.45 : 0) + y;
       uv[v * 2 + 1] = Math.atan2(az - 0.15, x - 0.035) / (2 * Math.PI) + 0.5;
     }
     // nếp gấp bụng: biên của "tấm bụng" phía dưới chính là đường chỉ; ra sau lưng thì chìm xuống đáy cho khỏi thành đai
     let seam = 0.245 + 0.55 * z * z + 0.35 * Math.min(0, x) - y;
-    seam = seam * (1 - legDom) * (1 - armDom) - 0.06 * Math.max(legDom, armDom);
+    seam = seam * (1 - legDom) - 0.06 * legDom;
     if (mouth > 0.5 || nose > 0.5) seam = -0.06;
     // panel.y cố định ở nửa chu kỳ rãnh may: tấm bụng không có sọc ngang như khủng long
     panel[v * 2] = seam; panel[v * 2 + 1] = 0.031;
@@ -1166,13 +1182,14 @@ const CHARS = {
       sets: { head: (x, y) => y > 0.6, chest: (x, y) => x > -0.15 && x < 0.25 && y > 0.2 && y < 0.5, core: (x, y) => x > -0.28 && x < 0.26 && y > 0.1 && y < 0.58 },
     },
   },
-  // không đuôi (tâm đuôi đặt xa ngoài thân), "đầu" là cả nửa trên cục bông uốn quanh điểm giữa thân; neo yếu cho rung rinh như thạch
+  // không đuôi (tâm đuôi đặt xa ngoài thân); "đầu" là cả cục bông uốn quanh điểm giữa thân, trọng số trải gần hết chiều cao:
+  // dải uốn hẹp thì ngửa đầu 0.4 rad ép ô lưng xẹp còn ~7% thể tích (mặt vải gập, viền đen lòi ra); neo yếu cho rung rinh như thạch
   egg: {
     sdf: eggSdf, features: eggFeatures, label: eggLabel, spine: EG.spine,
     box: [-0.48, 0.5, 1.0, 0.56], lat: [-0.46, 0.5, 1.0, 0.55], h: 0.0185, s: 0.125,
     rig: {
-      hip: [0.035, 0.16, 0.15], neck: [0, 0.3, 0], tail: [-9, 0, 0], tailLen: 1, upperY: 0.16,
-      headW: [-9, -8.9, 0.22, 0.42], legW: [0.17, 0.07, 0.04, 0.09, -0.2, -0.12], liftW: [0.16, 0.02],
+      hip: [0.035, 0.16, 0.15], neck: [0, 0.42, 0], tail: [-9, 0, 0], tailLen: 1, upperY: 0.16, crouchY: 0.55, pinch: 0.85, grabR: 1.6,
+      headW: [-9, -8.9, 0.08, 0.92], legW: [0.17, 0.07, 0.04, 0.09, -0.2, -0.12], liftW: [0.16, 0.02],
       anchor: (x, y, z) => 13 * Math.exp(-((x / 0.3) ** 2 + ((y - 0.46) / 0.26) ** 2 + (z / 0.3) ** 2)) + 3 * sstep(0.6, 0.8, y) + 1,
       sets: { head: (x, y) => y > 0.6, chest: (x, y) => y > 0.3 && y < 0.6, core: (x, y) => y > 0.12 && y < 0.7 },
     },
@@ -1469,7 +1486,9 @@ function upper(P, x, y, z, out) {
   const y2 = y1 * cr - z * sr, z2 = y1 * sr + z * cr;
   const cy = Math.cos(P.twist), sy = Math.sin(P.twist);
   const x3 = x1 * cy + z2 * sy, z3 = -x1 * sy + z2 * cy;
-  out[0] = x3; out[1] = y2 + Y0 + P.bob; out[2] = z3;
+  // crouchY: nhún xuống nhạt dần về đáy (trứng chân ngắn: nhún đều cả khối thì hàng ô sát sàn bị ép dẹt tới lật)
+  const C = CH.rig, bob = C.crouchY && P.bob < 0 ? P.bob * Math.min(1, Math.max(0, y) / C.crouchY) : P.bob;
+  out[0] = x3; out[1] = y2 + Y0 + bob; out[2] = z3;
   return out;
 }
 const _u = [0, 0, 0], _h = [0, 0, 0], _l = [0, 0, 0];
@@ -1765,11 +1784,13 @@ function step(m) {
 function startGrab(m) {
   const n = S.n, X = S.pos;
   const idx = [], w = [], off = [];
-  const r = m.r || 0.12;
+  // pinch: chỗ bị túm co lại còn bấy nhiêu phần kích thước; grabR: nới vùng túm. Trứng cả khối là "đầu" mềm: túm vùng nhỏ,
+  // co 50% rồi lắc thì viền vùng túm bị kéo lệch quá ô lưới, lật ngược thành gai
+  const r = (m.r || 0.12) * (CH.rig.grabR ?? 1), k = CH.rig.pinch ?? 0.5;
   for (let i = 0; i < n; i++) {
     const dx = X[i * 3] - m.p[0], dy = X[i * 3 + 1] - m.p[1], dz = X[i * 3 + 2] - m.p[2];
     const d = Math.sqrt(dx * dx + dy * dy + dz * dz);
-    if (d < r) { idx.push(i); w.push(Math.pow(1 - d / r, 0.7)); off.push(dx * 0.5, dy * 0.5, dz * 0.5); }
+    if (d < r) { idx.push(i); w.push(Math.pow(1 - d / r, 0.7)); off.push(dx * k, dy * k, dz * k); }
   }
   if (!idx.length) { S.grab = null; return; }
   S.grab = { idx, w, off, target: m.p.slice() };
@@ -2055,7 +2076,9 @@ const CHARACTERS = {
     isTail: (r) => r.y > 0.8,
     // tay sợi bún buông hai bên hông: xoay quanh trục dọc thân để giơ ngang rồi giơ thẳng lên đầu
     wing: (a, sg, m) => m.makeRotationX(-sg * a * 1.2).multiply(_ew.makeRotationZ(a * 0.2)),
-    bubble: (s) => (brain.state === 'wag' ? '😛 hehe' : brain.state === 'happy' ? '😏' : ({ '💢': '😭 oa oa!', '😵': '😭', 'hihi ✨': 'hehehe 😛' })[s] ?? s),
+    bubble: (s) => (brain.state === 'trick' ? ETR[brain.d.kind].bub(brain.d, brain.t) : brain.state === 'wag' ? '😛 hehe' : brain.state === 'happy' ? '😏' : ({ '💢': '😭 oa oa!', '😵': '😭', 'hihi ✨': 'hehehe 😛' })[s] ?? s),
+    // ăn: một nửa số lần hai tay nhặt đùi gà lên gặm; bóng: một nửa số lần ôm lên ném (phần egg tricks)
+    eat: (d, t, dt) => etEat(d, t, dt), nudge: (d, t, dt) => etNudge(d, t, dt),
     snd: {
       roar: (c, o, t, p) => {
         wail(c, o, t + 0.05, p, 0.34, 0.62);
@@ -2073,11 +2096,33 @@ const CHARACTERS = {
         hiss(c, o, 'bandpass', 2600, 1100, 1.3, t + 0.78, 0.18, 0.38, 0.005); tone(c, o, 'sine', 360 * p, 150, t + 0.78, 0.12, 0.18, 0.004);
         return 1.1;
       },
+      he: (c, o, t, p) => { he(c, o, t, 1.15 * p, 0.22); return 0.15; },
+      // "la la la": nguyên âm a (F1 ~800, F2 ~1250), mỗi nốt một đường bao riêng nên nghe tách tiếng
+      sing: (c, o, t, p, a = 0) => {
+        const N = a ? [76, 74, 72, 74, 76, 76, 76] : [72, 74, 76, 72, 79, 77, 76];
+        N.forEach((m, i) => voice(c, o, 'triangle', [[0, mtof(m) * p], [0.24, mtof(m) * p * 1.005]], t + i * 0.34, [[780, 820, 4, 1.4], [1250, 1300, 5, 0.8], [2600, 2600, 4, 0.25]], 0.15, 5.5, 5));
+        return N.length * 0.34 + 0.1;
+      },
+      like: (c, o, t, p) => { tone(c, o, 'sine', 260 * p, 820 * p, t, 0.22, 0.2, 0.01, [22, 25]); bell(c, o, 1568 * p, t + 0.22, 0.5, 0.14); he(c, o, t + 0.5, 1.1 * p, 0.2); return 0.75; },
+      lixi: (c, o, t, p) => { for (let i = 0; i < 6; i++) bell(c, o, rand(2100, 3300) * p, t + i * 0.06 + rand(0, 0.03), 0.25, 0.06); he(c, o, t + 0.45, 0.85 * p, 0.2); he(c, o, t + 0.6, 0.8 * p, 0.18); return 0.8; },
+      phone: (c, o, t, p) => { for (let i = 0; i < 3; i++) tone(c, o, 'sine', 1900 * p, 1900 * p, t + 0.3 + i * 0.22, 0.03, 0.06, 0.002); return 1; },
+      study: (c, o, t) => { hiss(c, o, 'bandpass', 3800, 2400, 0.9, t, 0.25, 0.1, 0.05); hiss(c, o, 'bandpass', 3000, 2000, 0.9, t + 0.3, 0.2, 0.08, 0.04); return 0.55; },
+      shower: (c, o, t) => { hiss(c, o, 'highpass', 2600, 3200, 0.6, t + 0.4, 4.3, 0.06, 0.3); hiss(c, o, 'bandpass', 1200, 1500, 0.8, t + 0.4, 4.3, 0.04, 0.3); return 4.8; },
+      cover: (c, o, t, p) => { for (let i = 0; i < 3; i++) he(c, o, t + i * 0.12, (1.2 + (i % 2) * 0.1) * p, 0.16); return 0.45; },
+      smug: (c, o, t, p) => { he(c, o, t, 0.78 * p, 0.22); he(c, o, t + 0.26, 0.74 * p, 0.2); return 0.45; },
+      shy: (c, o, t, p) => { voice(c, o, 'triangle', [[0, 520 * p], [0.25, 650 * p], [0.55, 580 * p]], t, [[380, 360, 4, 1.4], [1500, 1600, 5, 0.7]], 0.18, 6, 8); return 0.6; },
+      kiss: (c, o, t, p) => { tone(c, o, 'sine', 1400 * p, 2600 * p, t, 0.05, 0.2, 0.002); hiss(c, o, 'bandpass', 3000, 3000, 2, t, 0.03, 0.08, 0.001); return 0.1; },
+      grumpy: (c, o, t, p) => { for (const d of [0, 0.17]) { hiss(c, o, 'bandpass', 520 * p, 300, 1.1, t + d, 0.12, 0.3, 0.012); tone(c, o, 'sine', 190 * p, 120, t + d, 0.12, 0.1, 0.01); } return 0.35; },
+      confused: (c, o, t, p) => { voice(c, o, 'triangle', [[0, 430 * p], [0.18, 470 * p], [0.4, 720 * p]], t, [[600, 520, 4, 1.3], [1700, 1900, 5, 0.8]], 0.2, 0, 0); return 0.45; },
+      flat: (c, o, t, p) => { hiss(c, o, 'bandpass', 900, 260, 1.2, t, 0.9, 0.16, 0.03); voice(c, o, 'sine', [[0, 300 * p], [0.6, 190 * p]], t + 0.3, [[300, 260, 3, 1.4]], 0.16, 4, 4); return 1.0; },
     },
     setup() {
       // mắt híp kiểu sticker: hạt đen nhỏ, không đốm sáng, mí luôn hạ lưng chừng (adjust giữ mức tối thiểu)
       const black = new THREE.MeshPhysicalNodeMaterial({ color: '#151513', roughness: 0.35, clearcoat: 0.6, clearcoatRoughness: 0.3 });
       for (const { e } of eyes) { e.material = black; e.children[1].visible = false; }
+      // vách khe bị kéo giãn khi há: vân vải và ánh nhung theo UV giãn thành sọc sáng, nên tắt cả hai trong lòng miệng
+      plushMat.normalNode = normalMap(texture(normalTex, uv().mul(vec2(3, 4))), vec2(0.6).mul(float(1).sub(vMat.x)));
+      plushMat.sheenNode = THREE.TSL.materialSheen.mul(float(1).sub(vMat.x));
       // răng phẳng xếp hàng thay cho răng nanh
       teeth.geometry = new THREE.CapsuleGeometry(0.5, 0.7, 4, 12).scale(0.018, 0.026, 0.034).translate(0, 0.016, 0);
       EGG.tb = bindPoint(LM.tongue);
@@ -2096,10 +2141,11 @@ const CHARACTERS = {
         EGG.hair.push({ mesh, n, b: bindPoint([LM.hair.p[0], LM.hair.p[1], LM.hair.p[2] * sg]), rest: new THREE.Quaternion().setFromRotationMatrix(_em.makeBasis(side, n, _ea.crossVectors(side, n))), x: new THREE.Vector3(), v: new THREE.Vector3(), prev: null });
       }
       if (CHAR.outline) {
-        // viền sticker: vỏ lật mặt trong, phình theo pháp tuyến đã skin (theo cả hàm và tay); dày hơn lông một chút để không bị lông che
+        // viền sticker: vỏ lật mặt trong, phình theo pháp tuyến đã skin (theo cả hàm); dày hơn lông một chút để không bị lông che.
+        // Vách khe miệng thì thụt vào: pháp tuyến ở đó chĩa vào lòng khe nên vỏ phình sẽ chọc ra thành gai đen ở khoé miệng
         const m = new THREE.MeshBasicNodeMaterial({ side: THREE.BackSide });
         m.colorNode = color('#23231f');
-        m.positionNode = Fn(() => skinNode(false).add(normalLocal.mul(U.pile.mul(0.35).add(0.006))))();
+        m.positionNode = Fn(() => { const mt = attribute('mat', 'vec4'); return skinNode(false).add(normalLocal.mul(mix(U.pile.mul(0.35).add(0.006), -0.004, mt.x))); })();
         const outline = new THREE.Mesh(geo, m);
         outline.frustumCulled = false;
         scene.add(outline);
@@ -2123,9 +2169,15 @@ const CHARACTERS = {
         want.armL = (2.05 + 0.15 * Math.sin(t * 16)) * k; want.armR = (2.05 + 0.15 * Math.sin(t * 16 + 1.3)) * k;
         want.crouch = (0.015 + 0.012 * sob) * k; squint = 0.5 + 0.42 * k;
         tears(k);
+        // một nửa số lần khóc thì hai tay dụi mắt như sticker khóc ròng, còn lại giơ hai tay quá đầu mà gào
+        d.v ??= Math.random() < 0.5;
+        if (d.v) for (const sg of [-1, 1]) etReach(sg, 'eye', k, 0.01 * Math.sin(t * 10 + sg), 0.012 * Math.cos(t * 10 + sg));
+        else etReach(0, 'up', k, 0, 0.025 * Math.sin(t * 16), 0.02 * Math.sin(t * 13));
         camShake = Math.min(camShake, 0.15);
       } else if (s === 'grabbed') {
         want.jaw = 0.75 + 0.15 * Math.sin(t * 11); squint = 0.92;
+        // chân lũn cũn: đá mạnh như khủng long thì ô hai bên đáy bị xé chéo
+        for (let i = 0; i < 4; i++) want.kick[i] *= 0.45;
         tears(1);
       } else if (s === 'wag' || s === 'giggle') {
         // cười lè lưỡi: miệng toét, mắt nhắm tịt, người nảy theo tiếng hehe
@@ -2133,25 +2185,64 @@ const CHARACTERS = {
         tongue = env; squint = 0.5 + 0.42 * env;
         want.jaw = Math.max(want.jaw, (0.5 + 0.08 * Math.sin(t * 16)) * env);
         want.crouch += 0.018 * Math.abs(Math.sin(t * 8)) * env; want.headRoll += 0.12 * Math.sin(t * 4) * env;
-        if (s === 'wag') want.armL = want.armR = (0.35 + 0.2 * Math.sin(t * 16)) * env;
+        // lè lưỡi: hai tay giơ hai bên mặt; cười khúc khích: tay che miệng hoặc ôm bụng
+        if (s === 'wag') etReach(0, 'raise', env, 0, 0.015 * Math.sin(t * 16), 0);
+        else {
+          d.v ??= Math.random() < 0.5; d.sg ??= etCamSide();
+          if (d.v) { etReach(d.sg, 'mouth', env); etReach(-d.sg, 'belly', env); } else etReach(0, 'belly', env, 0, 0.01 * Math.sin(t * 22), 0);
+        }
       } else if (s === 'happy') {
         // được xoa: cười tủm tỉm nhe răng, mắt híp lại (má đỏ do blushT của hành vi gốc)
         const env = sstep(0, 0.2, t) * sstep(1.5, 1.15, t);
         squint = 0.5 + 0.3 * env; want.jaw = 0.1 * env;
+        // được xoa đầu: ngượng, một tay gãi đầu
+        d.sg ??= etCamSide();
+        etReach(d.sg, 'head', env, 0.008 * Math.sin(t * 6));
       } else if (s === 'nap') {
         // ngủ bẹp dí: cả cục bông xẹp xuống sàn
         const k = sstep(0, 1.6, t);
-        want.crouch = (0.13 + 0.008 * Math.sin(t * 1.5)) * k; want.headPitch = -0.15 * k; want.headRoll = 0.08 * k; want.armL = want.armR = 0.15 * k; want.jaw = 0.03;
+        want.crouch = (0.13 + 0.008 * Math.sin(t * 1.5)) * k; want.headPitch = -0.15 * k; want.headRoll = 0.08 * k; want.jaw = 0.03;
+        etReach(0, 'belly', k, 0, 0.006 * Math.sin(t * 1.5), 0);
       } else if (s === 'stomp') {
         want.liftH *= 0.4; want.liftFwd *= 0.5;
+      } else if (s === 'hop') {
+        // cả hàng hạt đáy là "chân" (neo cứng 110) còn thân neo yếu và bob trễ theo lò xo: chân bay cao hơn thân
+        // thì hàng ô sát đáy bị ép còn ~6% thể tích. Cho chân chỉ nhấc tới mức thân đã thực sự nhấc
+        if (d.air) want.hopH = Math.min(want.hopH, Math.max(0, pose.bob) + 0.02);
+        for (const im of pendingImpulses) if (im.mode === 'height' && im.v[1] < -1 && !im.soft) { im.soft = true; im.v[1] *= 0.6; }
       } else if (s === 'sniff') {
         // ngửi ngửi: cái mũi to giật giật
         want.headPitch += 0.06 * Math.sin(t * 24) * sstep(0, 0.5, t);
+      } else if (s === 'sneeze') {
+        // lấy tay che miệng mũi trước cú hắt xì
+        d.sg ??= etCamSide();
+        etReach(d.sg, 'mouth', sstep(0.15, 0.45, t) * sstep(1.9, 1.5, t));
+      } else if (s === 'wave') {
+        // vẫy ngượng: bàn tay vẫy sát bên má
+        const env = sstep(0, 0.35, t) * sstep(2.8, 2.4, t);
+        etReach(d.side ? 1 : -1, 'wave', env, 0, 0, 0.035 * Math.sin(t * 13));
+      } else if (s === 'dizzy') {
+        etReach(0, 'face', sstep(0, 0.3, t) * sstep(1.9, 1.2, t), 0, 0.05, 0);
+      } else if (s === 'seek') {
+        etReach(0, 'chest', 0.6, 0.06, 0.02 * Math.sin(t * 9), 0.02);
+      } else if (s === 'held') {
+        etReach(0, 'face', 0.8);
+      } else if (s === 'trick') {
+        etTrick(dt, tears);
+        squint = ET.face.sq;
       }
+      // nheo mắt do updateBrain đặt (gặm đùi gà kiểu cầm tay)
+      if (s !== 'trick') squint = Math.max(squint, ET.face.sq);
       EGG.want = tongue;
       want.eye = Math.max(want.eye, squint);
+      // khớp hàm ở xa (đòn bẩy ~0.74) nên chỉ cần góc nhỏ: há hết cỡ môi dưới tụt ~0.2
+      want.jaw *= 0.44;
+      // trứng không có eo: cúi/ngửa cả thân quanh hông (y 0.16) thì hàng hạt đáy đang ghim sàn giữ nguyên còn hàng trên
+      // xoay cắm xuống sàn (ô đáy dẹt về 0). Dồn phần lớn sang uốn "đầu" (dải trọng số trải từ đáy tới đỉnh) để đáy đứng yên
+      want.headPitch = clamp(want.headPitch + want.pitch * 0.7, -0.5, 0.6); want.pitch *= 0.3;
     },
     post(dt) {
+      etArms(dt); etHeld(dt); etPropsUpdate(dt); etReset(dt);
       const E = EGG, jp = U.jawPivot.value;
       E.out += (E.want - E.out) * Math.min(1, dt * 8); E.t += dt;
       const o = E.out;
@@ -3722,6 +3813,7 @@ function trigger(action) {
   if (action === 'spin' && s !== 'spin') setState('spin', { dir: Math.random() < 0.5 ? 1 : -1 });
   if (action === 'wag' && s !== 'wag') setState('wag', { n: 0 });
   if (action === 'nap') setState('nap', {});
+  if (action.startsWith('trick:')) startTrick(action.slice(6));
 }
 function startHop(n) { setState('hop', { n, i: 0, t0: 0, air: false, u: 0, H: n > 1 ? 0.13 : 0.16 }); }
 const canHop = (s) => !['grabbed', 'held', 'eat', 'nap', 'wake', 'spin'].includes(s) && !(s === 'hop' && brain.d.air);
@@ -3751,7 +3843,7 @@ function throwBall() {
   if (CALM.has(brain.state)) setState('chase');
 }
 function updateBall(dt) {
-  if (ball.state === 'gone') return;
+  if (ball.state !== 'live') return;
   const p = ball.p, v = ball.v;
   v.y -= 9 * dt;
   p.addScaledVector(v, dt);
@@ -4068,6 +4160,7 @@ function updateBrain(dt) {
       break;
     }
     case 'eat': {
+      if (CHAR.eat?.(brain.d, t, dt)) break;
       const dr = brain.d.drum;
       want.face = [dr.p.x, dr.p.z];
       if (t < 0.7) {
@@ -4325,6 +4418,7 @@ function updateBrain(dt) {
     }
     case 'nudge': {
       if (ball.state === 'gone') { setState(idleState()); break; }
+      if (CHAR.nudge?.(brain.d, t, dt)) break;
       const d = brain.d;
       want.face = [ball.p.x, ball.p.z];
       if (t < 0.42) {
@@ -4681,7 +4775,7 @@ function updateDrums(dt) {
       }
       d.g.position.copy(d.p);
       d.g.rotation.set(d.roll, d.yaw, 0, 'YXZ');
-    } else if (d.state === 'held') {
+    } else if (d.state === 'held' && !d.hand) {
       const m = skinBound(B.mouth, _v);
       // giữa hai hàm
       const low = _v2.copy(m).sub(U.jawPivot.value).applyMatrix4(_m4.extractRotation(rot.jaw)).add(U.jawPivot.value);
@@ -5348,7 +5442,7 @@ function updateSound(dt) {
     if (st !== 'nap') A.nap = null;
     else if ((N.t += dt) >= N.next) { N.next += Math.PI * 2 / 1.5; sfx('snore'); }
   }
-  if (st === 'eat' && brain.t > 0.8) {
+  if (st === 'eat' && brain.t > 0.8 && !brain.d.hands) {
     const k = Math.floor(((brain.t - 0.7) * 9 - Math.PI) / (Math.PI * 2));
     if (k >= 0 && k !== A.chew) { A.chew = k; sfx('chomp'); }
   }
@@ -5560,6 +5654,620 @@ function updateBubble() {
   const x = Math.round(s[0] + fxOff.bub[0]), y = Math.round(s[1] + fxOff.bub[1]);
   if (x !== bub.x) { bub.x = x; bubbleEl.style.left = `${x}px`; }
   if (y !== bub.y) { bub.y = y; bubbleEl.style.top = `${y}px`; }
+}
+
+// ------------------------------------------------------------------ egg tricks
+// Tay sợi bún của trứng không nằm trong mesh thân: mỗi khung dựng lại một ống theo đường cong Bézier từ vai (bám lưới) tới cổ tay,
+// đẩy ra ngoài thân bằng SDF nghỉ, cuối ống là nắm tay có ngón cái. Cổ tay đi theo góc vẫy armL/armR như tay SDF cũ, hoặc với tới
+// một "điểm đặt" (mắt, miệng, đỉnh đầu, bụng, hông, đồ vật…) mà adjust/trò đặt lại mỗi khung; đồ cầm tay đọc khung bàn tay ET.arms[i].M.
+const ET = { arms: [], P: {}, rc: new THREE.Vector3(), face: { sq: 0.5 }, props: {}, flap: 0 };
+const ET_ARM = { seg: 18, rad: 8, len: 0.26, r0: 0.023, r1: 0.017, hand: [0.09, 0.24, 0.46], tan: [0.15, -1, 0.3] };
+const _ka = new THREE.Vector3(), _kb = new THREE.Vector3(), _kc = new THREE.Vector3(), _kd = new THREE.Vector3(), _ke = new THREE.Vector3(), _kf = new THREE.Vector3();
+const _kg = new THREE.Vector3(), _kp = new THREE.Vector3(), _kq = new THREE.Quaternion(), _km = new THREE.Matrix4(), _kl = [0, 0, 0];
+const ET_UP = new THREE.Vector3(0, 1, 0);
+const etCamSide = () => (camLocal()[1] > 0 ? 1 : -1);
+// thế giới <-> không gian nghỉ theo khung "core" (gần đúng cứng): chỉ để ống tay né thân
+function etLocal(p, out) { return out.copy(p).sub(frames.coreC).applyQuaternion(_kq.copy(frames.core).invert()).add(ET.rc); }
+function etPush(p, m, k = 1) {
+  etLocal(p, _kp);
+  const d = restSDF.sdf(_kp.x, _kp.y, _kp.z);
+  if (d >= m) return;
+  restSDF.grad(_kp.x, _kp.y, _kp.z, 0.004, _kl);
+  _kp.x += _kl[0] * (m - d) * k; _kp.y += _kl[1] * (m - d) * k; _kp.z += _kl[2] * (m - d) * k;
+  p.copy(_kp).sub(ET.rc).applyQuaternion(frames.core).add(frames.coreC);
+}
+// sg: -1 tay trái (z < 0), 1 tay phải, 0 cả hai; dz tính hướng ra ngoài thân nên tự lật theo bên
+function etReach(sg, name, w = 1, dx = 0, dy = 0, dz = 0) {
+  for (const A of ET.arms) if (!sg || A.sg === sg) { const W = A.want; W.name = name; W.w = w; W.d[0] = dx; W.d[1] = dy; W.d[2] = dz * A.sg; }
+}
+function etReachAt(sg, p, t, u, w = 1) {
+  for (const A of ET.arms) if (A.sg === sg) { const W = A.want; W.name = 'world'; W.w = w; W.p.copy(p); W.t.copy(t); W.u.copy(u); }
+}
+const etMid = (o) => o.copy(ET.arms[0].h).add(ET.arms[1].h).multiplyScalar(0.5);
+
+function etHandTpl() {
+  const P = [], N = [], I = [];
+  const add = (g, x, y, z, sx = 1, sy = 1, sz = 1, rx = 0) => {
+    g.applyMatrix4(_km.compose(_ka.set(x, y, z), _kq.setFromAxisAngle(_kb.set(1, 0, 0), rx), _kc.set(sx, sy, sz)));
+    const p = g.attributes.position, n = g.attributes.normal, b = P.length / 3;
+    for (let i = 0; i < p.count; i++) { P.push(p.getX(i), p.getY(i), p.getZ(i)); N.push(n.getX(i), n.getY(i), n.getZ(i)); }
+    for (let i = 0; i < g.index.count; i++) I.push(b + g.index.getX(i));
+  };
+  // nắm tay tròn trước cổ tay (+X), ngón cái dựng theo +Y, bốn đốt ngón cuộn nằm ngang theo Z: nhỏ thì như bao tay, phóng to thành "like"
+  add(new THREE.SphereGeometry(1, 16, 12), 0.028, 0, 0, 0.031, 0.028, 0.026);
+  add(new THREE.CapsuleGeometry(0.0095, 0.02, 4, 10), 0.022, 0.032, 0);
+  for (let i = 0; i < 4; i++) add(new THREE.CapsuleGeometry(0.0082, 0.02, 4, 8), 0.053, 0.017 - i * 0.0115, 0, 1, 1, 1, Math.PI / 2);
+  return { p: new Float32Array(P), n: new Float32Array(N), i: I };
+}
+
+// điểm đặt tay (phía phải, gương z cho tay trái): [gốc tia, hướng tia, độ nổi khỏi vải, khung, lệch thêm theo khung, hướng cổ tay → ngón, ngón cái,
+// độ cong khuỷu (nhân với tay đòn Bézier: chống nạnh cần khuỷu chĩa hẳn ra ngoài)]
+const ET_SPEC = {
+  eye: [[0, 0.64, 0], [0.82, 0.12, 0.56], 0.03, 'head', [0, -0.045, 0], [-0.6, 0.45, -0.6], [0.6, 0.3, -0.6]],
+  face: [[0, 0.57, 0], [0.6, -0.05, 0.8], 0.032, 'head', [0, 0, 0], [-0.35, 0.85, -0.4], [1, 0, 0]],
+  mouth: [[0, 0.49, 0], [1, 0, 0.2], 0.04, 'head', [0, -0.025, 0], [0.1, 0.2, -1], [0.3, 1, 0]],
+  head: [[0, 0.62, 0], [0.12, 1, 0.5], 0.03, 'head', [0, 0, 0], [0.05, 0.1, -1], [1, 0, 0]],
+  wave: [[0, 0.6, 0], [0.72, 0, 0.7], 0.05, 'head', [0.03, 0.02, 0], [0.15, 1, 0.25], [1, 0, 0]],
+  belly: [[0, 0.27, 0], [1, 0, 0.55], 0.03, 'core', [0, 0, 0], [0.2, 0.15, -1], [0, 1, 0]],
+  hip: [[0, 0.3, 0], [-0.15, 0, 1], 0.025, 'core', [0, 0, 0], [0.1, -0.5, -0.85], [1, 0, 0], 2.4],
+  cover: [[0, 0.7, 0], [0.86, 0.2, 0.38], 0.03, 'head', [0.005, -0.04, 0.01], [-0.2, 0.15, -1], [0.3, 1, 0]],
+  cross: [[0, 0.36, 0], [1, 0, -0.7], 0.06, 'core', [0, 0, 0], [0.1, 0.05, -1], [0, 1, 0]],
+  cross2: [[0, 0.31, 0], [1, 0, -0.7], 0.035, 'core', [0, 0, 0], [0.1, 0.05, -1], [0, 1, 0]],
+  // tia ngang tâm không được đi qua khe miệng (y 0.41–0.45): castOut sẽ dừng ở vách trong khe
+  chest: [[0, 0.36, 0], [1, 0, 0], 0, 'chest', [0.11, 0.06, 0.065], [0.45, 0.25, -1], [0, 1, 0]],
+  feed: [[0, 0.49, 0], [1, 0, 0], 0, 'head', [0.085, -0.06, 0.055], [0.5, 0.3, -1], [0, 1, 0]],
+  up: [[0, 0.62, 0], [0, 1, 0.3], 0, 'head', [0.03, 0.17, 0.15], [0, 1, 0.25], [1, 0, 0]],
+  raise: [[0, 0.5, 0], [0, 0, 1], 0, 'chest', [0.05, 0.13, 0.13], [0.1, 1, 0.3], [1, 0, 0]],
+  sky: [[0, 0.62, 0], [1, 0.45, 0], 0, 'head', [0.22, -0.06, 0.065], [0.3, 0.6, -1], [0, 0, -1]],
+  like: [[0, 0.45, 0], [0.3, 0, 1], 0, 'chest', [0.1, 0.03, 0.13], [0.45, 0.1, 0.9], [0, 1, 0]],
+  top: [[0, 0.6, 0], [0, 1, 0], 0, 'head', [0, 0, 0], [1, 0, 0], [0, 1, 0]],
+};
+
+function etBuild() {
+  // tâm nghỉ của tập "core" (0.12 < y < 0.7 như CHARS.egg.rig.sets) để quy đổi với frames.coreC
+  let n = 0;
+  for (let i = 0; i < NP; i++) { const y = LAT.rest[i * 3 + 1]; if (y > 0.12 && y < 0.7) { ET.rc.x += LAT.rest[i * 3]; ET.rc.y += y; ET.rc.z += LAT.rest[i * 3 + 2]; n++; } }
+  ET.rc.divideScalar(n);
+  const sh = LM.shoulder, g = restSDF.grad(sh[0], sh[1], sh[2], 0.004, [0, 0, 0]);
+  for (const sg of [-1, 1]) {
+    const m = (a) => new THREE.Vector3(a[0], a[1], a[2] * sg);
+    ET.arms.push({
+      sg, piv: sg < 0 ? U.armLPivot.value : U.armRPivot.value, rot: sg < 0 ? rot.armL : rot.armR,
+      off: m(ET_ARM.hand).sub(m(sh)), tan: m(ET_ARM.tan).normalize(), thumb: new THREE.Vector3(1, 0, 0), nrm: m(g).normalize(),
+      h: new THREE.Vector3(), v: new THREE.Vector3(), t: new THREE.Vector3(0, -1, 0), up: new THREE.Vector3(1, 0, 0), init: false,
+      w: 0, want: { name: 'chest', w: 0, d: [0, 0, 0], p: new THREE.Vector3(), t: new THREE.Vector3(), u: new THREE.Vector3() }, sc: 1, scW: 1,
+      M: new THREE.Matrix4(), pts: Array.from({ length: ET_ARM.seg + 1 }, () => new THREE.Vector3()),
+    });
+  }
+  for (const k in ET_SPEC) {
+    const [o, dir, out, f, off, t, u, bow = 1] = ET_SPEC[k];
+    ET.P[k] = [-1, 1].map((sg) => {
+      const m = (a) => [a[0], a[1], a[2] * sg], c = restSDF.castOut(m(o), m(dir));
+      return { b: bindPoint(c.p.map((v, i) => v + c.n[i] * out)), f, bow, off: new THREE.Vector3(...m(off)), t: new THREE.Vector3(...m(t)).normalize(), u: new THREE.Vector3(...m(u)).normalize() };
+    });
+  }
+  const tpl = etHandTpl(), nT = (ET_ARM.seg + 1) * ET_ARM.rad, nH = tpl.p.length / 3, idx = [];
+  for (let a = 0; a < 2; a++) for (let j = 0; j < ET_ARM.seg; j++) for (let k = 0; k < ET_ARM.rad; k++) {
+    const i0 = a * nT + j * ET_ARM.rad + k, i1 = a * nT + j * ET_ARM.rad + (k + 1) % ET_ARM.rad;
+    idx.push(i0, i1, i0 + ET_ARM.rad, i1, i1 + ET_ARM.rad, i0 + ET_ARM.rad);
+  }
+  for (let a = 0; a < 2; a++) for (const i of tpl.i) idx.push(2 * nT + a * nH + i);
+  Object.assign(ET, { tpl, nT, nH, pos: new Float32Array((nT + nH) * 6), nor: new Float32Array((nT + nH) * 6), geo: new THREE.BufferGeometry() });
+  ET.geo.setAttribute('position', new THREE.BufferAttribute(ET.pos, 3).setUsage(THREE.DynamicDrawUsage));
+  ET.geo.setAttribute('normal', new THREE.BufferAttribute(ET.nor, 3).setUsage(THREE.DynamicDrawUsage));
+  ET.geo.setIndex(idx);
+  // viền sticker cho tay: cùng geometry, vỏ lật mặt phình theo pháp tuyến (bề dày cố định theo thế giới, kể cả lúc tay phóng to)
+  const ol = new THREE.MeshBasicNodeMaterial({ side: THREE.BackSide });
+  ol.colorNode = color('#23231f');
+  ol.positionNode = positionLocal.add(normalLocal.mul(U.pile.mul(0.25).add(0.004)));
+  for (const m of [lidMat, ol]) { const o = new THREE.Mesh(ET.geo, m); o.frustumCulled = false; scene.add(o); }
+  etProps();
+}
+
+function etTarget(A) {
+  const W = A.want;
+  if (W.name === 'world') { _kd.copy(W.p); _ke.copy(W.t); _kf.copy(W.u); return; }
+  const P = ET.P[W.name][A.sg > 0 ? 1 : 0], q = P.f === 'head' ? frames.head : P.f === 'chest' ? frames.chest : frames.core;
+  skinBound(P.b, _kd).add(_kg.set(P.off.x + W.d[0], P.off.y + W.d[1], P.off.z + W.d[2]).applyQuaternion(q));
+  _ke.copy(P.t).applyQuaternion(q); _kf.copy(P.u).applyQuaternion(q);
+}
+function etArms(dt) {
+  const k = 1 - Math.exp(-dt * 9), kt = 1 - Math.exp(-dt * 12), qc = frames.chest;
+  ET.arms.forEach((A, a) => {
+    const S = A.piv;
+    // góc vẫy mặc định: xoay độ lệch nghỉ vai → cổ tay quanh vai bằng đúng ma trận rot.armL/R như tay SDF cũ
+    _ka.copy(A.off).applyQuaternion(qc).applyMatrix4(A.rot).add(S);
+    _kb.copy(A.tan).applyQuaternion(qc).applyMatrix4(A.rot);
+    _kc.copy(A.thumb).applyQuaternion(qc).applyMatrix4(A.rot);
+    A.w += (A.want.w - A.w) * k;
+    if (A.w > 1e-3) { etTarget(A); _ka.lerp(_kd, A.w); _kb.lerp(_ke, A.w); _kc.lerp(_kf, A.w); }
+    if (!A.init || A.h.distanceToSquared(S) > 0.5) { A.h.copy(_ka); A.v.set(0, 0, 0); A.t.copy(_kb).normalize(); A.up.copy(_kc); A.init = true; }
+    else if (dt > 0) {
+      // cổ tay là lò xo giảm chấn tới hạn (tích phân ẩn): đổi điểm đặt thì tay lướt tới, thân lắc thì tay sợi bún trễ theo
+      const om = 18;
+      A.v.addScaledVector(_kd.subVectors(A.h, _ka), -om * om * dt).divideScalar(1 + 2 * om * dt + om * om * dt * dt);
+      A.h.addScaledVector(A.v, dt);
+      A.t.lerp(_kb.normalize(), kt).normalize(); A.up.lerp(_kc, kt);
+      A.sc += (A.scW - A.sc) * (1 - Math.exp(-dt * 9));
+    }
+    if (A.sc < 1.5) { _kd.copy(A.h).addScaledVector(A.t, 0.028); _ke.copy(_kd); etPush(_kd, 0.03); A.h.add(_kd.sub(_ke)); }
+    // tay rời vai theo hướng giữa pháp tuyến vai và hướng tới bàn tay: với ra trước thì không thành thanh ngang chắn ngang người
+    const bow = A.want.name === 'world' ? 1 : lerp(1, ET.P[A.want.name][0].bow, A.w);
+    const n0 = _ke.copy(A.nrm).applyQuaternion(qc), L = A.h.distanceTo(S), kk = clamp(L * 0.4 * bow, 0.05, 0.2 * bow);
+    _kb.subVectors(A.h, S).normalize().multiplyScalar(0.7).add(n0).normalize();
+    // sợi bún võng xuống giữa (như có khuỷu): đưa tay ra trước miệng thì nhìn chính diện thành chữ U, không thành thanh ngang
+    _ka.copy(S).addScaledVector(n0, -0.015); _kb.multiplyScalar(kk).add(S); _kc.copy(A.h).addScaledVector(A.t, -kk);
+    _kb.y -= 0.45 * kk; _kc.y -= 0.6 * kk;
+    let len = 0;
+    for (let j = 0; j <= ET_ARM.seg; j++) {
+      const u = j / ET_ARM.seg, v = 1 - u, b0 = v * v * v, b1 = 3 * u * v * v, b2 = 3 * u * u * v, b3 = u * u * u, p = A.pts[j];
+      p.set(_ka.x * b0 + _kb.x * b1 + _kc.x * b2 + A.h.x * b3, _ka.y * b0 + _kb.y * b1 + _kc.y * b2 + A.h.y * b3, _ka.z * b0 + _kb.z * b1 + _kc.z * b2 + A.h.z * b3);
+      if (j > 1 && j < ET_ARM.seg) etPush(p, ET_ARM.r0 + 0.008, sstep(0.05, 0.3, u));
+      if (j) len += p.distanceTo(A.pts[j - 1]);
+    }
+    etWrite(a, A, len);
+  });
+  ET.geo.attributes.position.needsUpdate = true;
+  ET.geo.attributes.normal.needsUpdate = true;
+}
+function etWrite(a, A, len) {
+  const P = ET.pos, Nn = ET.nor, R = ET_ARM.rad, pts = A.pts, T = _ka, N = _kb, Bv = _kc;
+  // sợi bún kéo dài thì thon lại (giữ thể tích bằng mắt), phóng to bàn tay thì cổ tay loe ra đón nắm tay
+  const thin = clamp(Math.sqrt(ET_ARM.len / Math.max(len, 1e-3)), 0.7, 1.1);
+  T.subVectors(pts[1], pts[0]).normalize();
+  N.crossVectors(T, ET_UP); if (N.lengthSq() < 1e-6) N.set(1, 0, 0);
+  for (let j = 0; j <= ET_ARM.seg; j++) {
+    const u = j / ET_ARM.seg;
+    if (j) T.subVectors(pts[Math.min(ET_ARM.seg, j + 1)], pts[j - 1]).normalize();
+    N.addScaledVector(T, -N.dot(T)).normalize();
+    Bv.crossVectors(T, N);
+    const r = lerp(ET_ARM.r0, ET_ARM.r1, u) * thin * (1 + (A.sc - 1) * 0.5 * u ** 6), p = pts[j];
+    for (let k = 0; k < R; k++) {
+      const th = k / R * Math.PI * 2, c = Math.cos(th), s = Math.sin(th);
+      const nx = N.x * c + Bv.x * s, ny = N.y * c + Bv.y * s, nz = N.z * c + Bv.z * s, o = (a * ET.nT + j * R + k) * 3;
+      P[o] = p.x + nx * r; P[o + 1] = p.y + ny * r; P[o + 2] = p.z + nz * r;
+      Nn[o] = nx; Nn[o + 1] = ny; Nn[o + 2] = nz;
+    }
+  }
+  const Y = _kd.copy(A.up).addScaledVector(T, -A.up.dot(T));
+  if (Y.lengthSq() < 1e-6) Y.copy(N);
+  Y.normalize();
+  A.M.makeBasis(T, Y, _ke.crossVectors(T, Y)).setPosition(pts[ET_ARM.seg]);
+  const e = A.M.elements, sc = A.sc, tp = ET.tpl.p, tn = ET.tpl.n, base = (2 * ET.nT + a * ET.nH) * 3;
+  for (let i = 0; i < tp.length; i += 3) {
+    const x = tp[i] * sc, y = tp[i + 1] * sc, z = tp[i + 2] * sc, nx = tn[i], ny = tn[i + 1], nz = tn[i + 2], o = base + i;
+    P[o] = e[0] * x + e[4] * y + e[8] * z + e[12]; P[o + 1] = e[1] * x + e[5] * y + e[9] * z + e[13]; P[o + 2] = e[2] * x + e[6] * y + e[10] * z + e[14];
+    Nn[o] = e[0] * nx + e[4] * ny + e[8] * nz; Nn[o + 1] = e[1] * nx + e[5] * ny + e[9] * nz; Nn[o + 2] = e[2] * nx + e[6] * ny + e[10] * nz;
+  }
+}
+
+// ---- đồ vật: dựng một lần, ẩn khi không dùng; mỗi món có độ hiện s đuổi theo w (trò đặt w = 1 mỗi khung) để bật ra/thu vào
+function etProps() {
+  const mk = (parts, mat) => { const o = new THREE.Mesh(mergeGeos(parts), mat); o.visible = false; return o; };
+  const M = (x, y, z, rx = 0, ry = 0, rz = 0, s = 1) => new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromEuler(new THREE.Euler(rx, ry, rz)), new THREE.Vector3(s, s, s));
+  const prop = (name, ...meshes) => { const g = new THREE.Group(); g.add(...meshes); g.visible = false; scene.add(g); for (const m of meshes) m.visible = true; ET.props[name] = { o: g, s: 0, w: 0 }; return g; };
+  const red = feltMat('#d92a32', '#ffb3b0'), gold = feltMat('#f2c14e', '#fff2b8'), wood = feltMat('#c8925c', '#ffe0bd'), paper = feltMat('#fffaf0', '#ffffff');
+  // bao lì xì: mặt trước là +Z
+  prop('env', mk([[new THREE.BoxGeometry(0.105, 0.155, 0.012)], [new THREE.BoxGeometry(0.105, 0.035, 0.014), M(0, 0.06, 0.001, -0.25)]], red),
+    mk([[new THREE.CylinderGeometry(0.024, 0.024, 0.004, 24), M(0, 0.015, 0.0075, Math.PI / 2)], [new THREE.BoxGeometry(0.07, 0.008, 0.003), M(0, -0.04, 0.0075)]], gold));
+  // điện thoại vỏ đỏ, màn hình phát sáng ở mặt +Z
+  const screen = new THREE.MeshBasicNodeMaterial({ color: '#bfe8ff', toneMapped: false });
+  prop('phone', mk([[new THREE.BoxGeometry(0.078, 0.145, 0.014)], [new THREE.CylinderGeometry(0.008, 0.008, 0.004, 12), M(0.02, 0.05, -0.008, Math.PI / 2)]], red),
+    mk([[new THREE.PlaneGeometry(0.064, 0.122), M(0, 0, 0.0075)]], screen));
+  ET.props.phone.scr = screen;
+  // bàn học thấp + quyển sách mở (đặt cố định trên sàn lúc bắt đầu trò)
+  const leg = (x, z) => [new THREE.BoxGeometry(0.03, 0.18, 0.03), M(x, 0.09, z)];
+  prop('desk', mk([[new THREE.BoxGeometry(0.5, 0.025, 0.25), M(0, 0.19, 0)], leg(-0.22, -0.1), leg(0.22, -0.1), leg(-0.22, 0.1), leg(0.22, 0.1)], wood),
+    mk([[new THREE.BoxGeometry(0.17, 0.008, 0.125), M(-0.045, 0.207, 0, 0, 0, 0.1)], [new THREE.BoxGeometry(0.17, 0.008, 0.125), M(0.045, 0.207, 0, 0, 0, -0.1)]], red),
+    mk([[new THREE.BoxGeometry(0.075, 0.014, 0.11), M(-0.042, 0.216, 0, 0, 0, 0.1)], [new THREE.BoxGeometry(0.075, 0.014, 0.11), M(0.042, 0.216, 0, 0, 0, -0.1)]], paper));
+  // vòi sen: ống cong đi lên + bát sen chúc xuống (gốc toạ độ ở mặt bát sen)
+  const pipe = new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[0, 0.05, 0], [0, 0.13, 0], [-0.06, 0.2, 0], [-0.2, 0.22, 0], [-0.32, 0.6, 0]].map((q) => new THREE.Vector3(...q))), 24, 0.011, 8);
+  // dòng nước: nón mờ loe xuống từ bát sen tới đỉnh đầu, chỉ hiện lúc nước chảy (ET.water)
+  const water = new THREE.MeshBasicNodeMaterial({ color: '#8fd0ff', transparent: true, opacity: 0.6, depthWrite: false, side: THREE.DoubleSide });
+  const stream = mk([[new THREE.CylinderGeometry(0.055, 0.13, 0.26, 24, 1, true), M(0, -0.13, 0)]], water);
+  prop('shower', mk([[pipe], [new THREE.CylinderGeometry(0.03, 0.065, 0.05, 24), M(0, 0.025, 0)], [new THREE.CylinderGeometry(0.06, 0.06, 0.004, 24), M(0, 0, 0)]], feltMat('#cfd8de', '#ffffff')), stream);
+  ET.props.shower.st = stream; ET.water = 0; ET.ws = 0;
+  // đùi gà đội đầu (trò giận dỗi)
+  const hd = makeDrumstick();
+  scene.remove(hd); prop('hdrum', ...hd.children.slice());
+  ET.props.hdrum.k = 1.35;
+  // môi chu (ngại ngùng): hai thuỳ kem hồng nhô trước miệng
+  const lip = feltMat('#f4b8a8', '#fff0ea');
+  prop('lips', mk([[new THREE.SphereGeometry(1, 16, 10), M(0.012, 0.012, 0).multiply(new THREE.Matrix4().makeScale(0.026, 0.017, 0.042))], [new THREE.SphereGeometry(1, 16, 10), M(0.012, -0.014, 0).multiply(new THREE.Matrix4().makeScale(0.027, 0.018, 0.038))]], lip));
+  // miệng chữ "o" lúc hát: vành môi tròn + lòng miệng tối, mặt trước là +X (như khung đầu)
+  prop('oh', mk([[new THREE.TorusGeometry(0.032, 0.012, 10, 28), M(0.012, 0, 0, 0, Math.PI / 2, 0)]], lip), mk([[new THREE.CircleGeometry(0.034, 24), M(0.008, 0, 0, 0, Math.PI / 2, 0)]], feltMat('#2a0b10', '#5a2a30')));
+  // dãi: giọt dài treo ở khoé miệng (trục +Y hướng lên, gốc ở đỉnh giọt)
+  const drool = new THREE.MeshPhysicalNodeMaterial({ color: '#cdeeff', roughness: 0.15, clearcoat: 1, transparent: true, opacity: 0.8 });
+  prop('drool', mk([[new THREE.SphereGeometry(1, 12, 10), M(0, -1, 0)]], drool));
+  ET.props.drool.o.scale.setScalar(1e-3);
+  ET.mouthC = [-1, 1].map((sg) => bindPoint(restSDF.castOut([0, 0.418, 0.11 * sg], [1, 0, 0]).p));
+}
+const _kq3 = new THREE.Quaternion(), _ke2 = new THREE.Euler(), _km2 = new THREE.Matrix4();
+function etPropsUpdate(dt) {
+  const k = 1 - Math.exp(-dt * 10);
+  for (const n in ET.props) {
+    const P = ET.props[n];
+    if (dt > 0) P.s += (P.w - P.s) * k;
+    P.o.visible = P.s > 0.01;
+  }
+  const { env, phone, desk, shower, hdrum, lips, drool } = ET.props, f = fwd(), d = brain.d;
+  if (env.o.visible) {
+    // mặt bao (+Z) quay ra trước theo khung ngực; phẩy phẩy quanh trục dọc
+    etMid(env.o.position).addScaledVector(_ka.set(f[0], 0, f[1]), 0.012);
+    env.o.quaternion.copy(frames.chest).multiply(_kq3.setFromEuler(_ke2.set(-0.15, Math.PI / 2 + ET.flap, 0)));
+    env.o.scale.setScalar(env.s);
+  }
+  if (phone.o.visible) {
+    // màn hình (+Z) nhìn về phía mặt; hơi nhấp nháy khi lướt
+    etMid(phone.o.position);
+    phone.o.lookAt(skinBound(B.snout, _ka).addScaledVector(ET_UP, 0.12));
+    phone.o.scale.setScalar(phone.s);
+    phone.scr.color.setHSL(0.55, 0.9, 0.82 + 0.06 * Math.sin(simTime * 13));
+  }
+  if (desk.o.visible && d.desk) {
+    desk.o.position.set(d.desk[0], 0, d.desk[1]);
+    desk.o.rotation.set(0, d.desk[2] + Math.PI / 2, 0);
+    desk.o.scale.set(1, desk.s, 1);
+  }
+  if (shower.o.visible) {
+    shower.o.position.set(frames.headC.x + f[0] * 0.13, frames.headC.y + 0.27 + 0.3 * (1 - shower.s), frames.headC.z + f[1] * 0.13);
+    shower.o.rotation.set(0, rex.heading, 0);
+    if (dt > 0) ET.ws += (ET.water - ET.ws) * k;
+    shower.st.visible = ET.ws > 0.05;
+    shower.st.scale.set(1, ET.ws * (1 + 0.04 * Math.sin(simTime * 40)), 1);
+  }
+  if (hdrum.o.visible) {
+    // nằm vắt trên đỉnh đầu như sticker, xương chĩa ra sau: lúc quay lưng dỗi thì camera thấy cả cái đùi gà nằm ngang
+    skinBound(ET.P.top[1].b, hdrum.o.position).addScaledVector(_ka.set(0, 1, 0).applyQuaternion(frames.head), 0.045);
+    hdrum.o.quaternion.copy(frames.head).multiply(_kq3.setFromEuler(_ke2.set(0, 0.35, 0.12)));
+    hdrum.o.scale.setScalar(hdrum.s * hdrum.k);
+  }
+  for (const P of [lips, ET.props.oh]) if (P.o.visible) {
+    skinBound(B.mouth, P.o.position).addScaledVector(_ka.set(1, 0, 0).applyQuaternion(frames.head), 0.012);
+    P.o.quaternion.copy(frames.head);
+    P.o.scale.setScalar(P.s * (1 + (P === lips ? 0.08 * Math.sin(simTime * 7) : 0)));
+  }
+  if (ET.props.oh.o.visible) ET.props.oh.o.scale.y *= 1 + 0.35 * Math.max(0, Math.sin(brain.t * 9.4));
+  // môi chu / miệng chữ "o" đè lên khe miệng: giấu hàm răng cho khỏi lòi ra hai bên
+  teeth.visible = lips.s < 0.4 && ET.props.oh.s < 0.4;
+  if (drool.o.visible) {
+    // khoé môi dưới đi theo hàm như răng dưới
+    const jp = U.jawPivot.value;
+    skinBound(ET.mouthC[0], drool.o.position).sub(jp).applyMatrix4(_km2.extractRotation(rot.jaw)).add(jp);
+    const L = drool.s * (0.6 + 0.4 * Math.sin(simTime * 2.2) ** 2);
+    drool.o.scale.set(0.01, 0.014 + 0.04 * L, 0.01);
+    drool.o.rotation.set(0, 0, 0.15 * Math.sin(simTime * 3));
+  }
+}
+// đồ đang cầm bằng hai tay: đùi gà (lúc ăn kiểu nhặt lên) và bóng (lúc ôm bóng ném)
+const _kq4 = new THREE.Quaternion();
+function etHeld(dt) {
+  const f = fwd();
+  for (const dr of drums) {
+    if (dr.state === 'gone') { dr.hand = false; continue; }
+    if (!dr.hand) continue;
+    if (brain.state !== 'eat' || brain.d.drum !== dr) { dr.hand = false; dr.state = 'fall'; dr.v.set(0, 0, 0); continue; }
+    // thịt quay về phía miệng, hai tay nắm phía xương: xương (trục -X của đùi gà) chĩa ra trước
+    etMid(dr.p).addScaledVector(_ka.set(f[0], 0, f[1]), -0.03);
+    _ka.set(-f[0], -0.25, -f[1]).normalize(); _kc.crossVectors(_ka, ET_UP).normalize(); _kb.crossVectors(_kc, _ka);
+    _kq4.setFromRotationMatrix(_km.makeBasis(_ka, _kb, _kc));
+    dr.g.position.copy(dr.p);
+    dr.g.quaternion.slerp(_kq4, dt > 0 ? 1 - Math.exp(-dt * 8) : 0);
+    dr.g.scale.setScalar(Math.max(0.001, dr.scale));
+  }
+  if (ball.state === 'hand') {
+    if (brain.state !== 'nudge') { ball.state = 'live'; ball.v.set(0, 0, 0); return; }
+    etMid(ball.p).addScaledVector(ET_UP, 0.01);
+    ball.outer.position.copy(ball.p); ball.outer.scale.setScalar(1);
+  }
+}
+
+// ---- ăn kiểu nhặt lên (50/50 với cúi xuống gặm như cũ) và ôm bóng ném
+function etEat(d, t, dt) {
+  const dr = d.drum;
+  d.hands ??= Math.random() < 0.5;
+  if (!d.hands) return false;
+  if (!d.said) { d.said = true; statusEl.textContent = '🍗 Hai tay ôm đùi gà gặm'; }
+  const dx = dr.p.x - rex.x, dz = dr.p.z - rex.z, dist = Math.hypot(dx, dz) || 1;
+  if (d.grab == null) {
+    want.face = [dr.p.x, dr.p.z];
+    // tay ngắn hơn cái cổ khủng long: lũn cũn lại sát hơn rồi mới cúi
+    if (d.bend == null && (dist < 0.46 || t > 1.6)) d.bend = t;
+    if (d.bend == null) { want.moveTo = [dr.p.x - dx / dist * 0.4, dr.p.z - dz / dist * 0.4]; want.speed = 0.22; want.headPitch = -0.12; return true; }
+    const k = sstep(d.bend, d.bend + 0.55, t), h = rex.heading;
+    want.pitch = -0.3 * k; want.crouch = 0.06 * k; want.headPitch = -0.22 * k; want.jaw = 0.3 * k; want.eye = 0.2;
+    // hai tay ôm hai đầu đùi gà (trục -X là phía xương), tay phải nhận đầu nằm bên phải thân
+    _ka.set(Math.cos(dr.yaw), 0, -Math.sin(dr.yaw));
+    const right = _kb.set(Math.sin(h), 0, Math.cos(h)), sgM = _ka.dot(right) > 0 ? 1 : -1;
+    for (const sg of [-1, 1]) {
+      _kc.copy(dr.p).addScaledVector(_ka, sg === sgM ? 0.03 : -0.1).addScaledVector(ET_UP, 0.03);
+      etReachAt(sg, _kc, _kd.copy(right).multiplyScalar(-sg).addScaledVector(ET_UP, -0.8).normalize(), _ke.set(Math.cos(h), 0, -Math.sin(h)), k);
+    }
+    if (t > d.bend + 0.62) { d.grab = t; dr.state = 'held'; dr.hand = true; sfx('plop'); }
+    return true;
+  }
+  const g = t - d.grab, up = sstep(0, 0.5, g);
+  want.face = [rex.x + Math.cos(rex.heading), rex.z - Math.sin(rex.heading)];
+  want.pitch = -0.3 * (1 - up); want.crouch = 0.06 * (1 - up); want.headPitch = lerp(-0.22, 0.05, up); want.eye = 0.3;
+  etReach(0, g < 0.7 ? 'chest' : 'feed', 1);
+  if (g > 0.85) {
+    // gặm: hàm nhai, mỗi nhịp một miếng, đùi gà teo dần; tự phát tiếng nhai vì nhịp lệch với kiểu cúi gặm
+    const ct = g - 0.85, chew = Math.max(0, Math.sin(ct * 9));
+    want.jaw = 0.6 * chew; want.headPitch += 0.07 * chew; ET.face.sq = 0.85;
+    dr.bites = Math.floor(ct * 9 / (Math.PI * 2));
+    dr.scale = Math.max(0, 1 - ct / 2.1);
+    const n = Math.floor((ct * 9 - Math.PI / 2) / (Math.PI * 2));
+    if (n >= 0 && n !== d.chew) { d.chew = n; sfx('chomp'); puff(skinBound(B.mouth, new THREE.Vector3()), new THREE.Vector3(0, 0.2, 0), '#9b4f2c', 2, 0.008, 0.3, 0.7, -1.4); }
+    if (ct > 2.2) {
+      dr.state = 'gone'; dr.g.visible = false; dr.hand = false;
+      rex.snacks++; out.snacks.textContent = rex.snacks;
+      setState(nearestDrum() ? 'seek' : idleState());
+    }
+  }
+  return true;
+}
+function etNudge(d, t, dt) {
+  d.thr ??= Math.random() < 0.5;
+  if (!d.thr) return false;
+  if (!d.said) { d.said = true; statusEl.textContent = '⚽ Ôm bóng lên ném'; }
+  const h = rex.heading, f = fwd(), right = _kb.set(Math.sin(h), 0, Math.cos(h));
+  if (d.grab == null) {
+    if (ball.state !== 'live') { setState('chase'); return true; }
+    const dx = ball.p.x - rex.x, dz = ball.p.z - rex.z, dist = Math.hypot(dx, dz) || 1;
+    want.face = [ball.p.x, ball.p.z];
+    if (d.bend == null && (dist < 0.5 || t > 1.4)) d.bend = t;
+    if (d.bend == null) { want.moveTo = [ball.p.x - dx / dist * 0.45, ball.p.z - dz / dist * 0.45]; want.speed = 0.25; want.headPitch = -0.1; return true; }
+    const k = sstep(d.bend, d.bend + 0.45, t);
+    want.pitch = -0.28 * k; want.crouch = 0.06 * k; want.headPitch = -0.2 * k; want.jaw = 0.2 * k;
+    for (const sg of [-1, 1]) {
+      _kc.copy(ball.p).addScaledVector(right, sg * (BALL_R + 0.025)).addScaledVector(ET_UP, 0.015);
+      etReachAt(sg, _kc, _kd.copy(right).multiplyScalar(-sg).addScaledVector(ET_UP, -0.5).normalize(), _ke.set(f[0], 0, f[1]), k);
+    }
+    if (t > d.bend + 0.5) {
+      if (etMid(_kc).distanceTo(ball.p) < 0.2) { d.grab = t; ball.state = 'hand'; ball.v.set(0, 0, 0); sfx('plop'); }
+      else if (t > d.bend + 1.4) { d.thr = false; setState('chase'); }
+    }
+    return true;
+  }
+  // người khác ném quả mới giữa chừng: bỏ, quay lại đuổi
+  if (ball.state !== 'hand' && !d.thrown) { setState('chase'); return true; }
+  const g = t - d.grab, up = sstep(0, 0.45, g), wind = sstep(0.45, 0.85, g) * sstep(1.05, 0.95, g);
+  d.dir ??= h + rand(-0.6, 0.6);
+  want.face = [rex.x + Math.cos(d.dir), rex.z - Math.sin(d.dir)];
+  want.pitch = lerp(-0.28, 0, up) + 0.12 * wind - 0.12 * sstep(0.95, 1.1, g) * sstep(1.7, 1.3, g);
+  want.crouch = 0.06 * (1 - up) + 0.03 * wind; want.headPitch = lerp(-0.2, 0.25, up) * (1 - 0.6 * sstep(0.95, 1.2, g)); want.jaw = 0.25 + 0.5 * wind; want.eye = 0.3;
+  if (!d.thrown) etReach(0, g < 0.45 ? 'chest' : 'up', 1, 0.02, g < 0.45 ? 0 : -0.04, g < 0.45 ? 0.05 : -0.12);
+  else etReach(0, 'chest', sstep(1.7, 1.2, g), 0.18, -0.02, 0.06);
+  if (g > 0.98 && !d.thrown) {
+    d.thrown = true; ball.state = 'live';
+    const a = d.dir, sp = rand(1.3, 1.6);
+    ball.v.set(Math.cos(a) * sp, 2.3, -Math.sin(a) * sp); ball.squash = 0.2; ball.nudges++;
+    puff(ball.p.clone(), new THREE.Vector3(0, 0.3, 0), '#fffaf0', 4, 0.008, 0.3, 0.5, -0.4);
+    camShake = Math.max(camShake, 0.15); sfx('throw'); sfx('he');
+  }
+  if (g > 1.9) { if (ball.nudges >= ball.max) { ball.interest = false; setState('wag', { n: 0 }); } else setState('chase'); }
+  return true;
+}
+
+// ---- trò sticker: mỗi trò đặt dáng (want), điểm đặt tay (etReach), mặt (ET.face), đồ vật (ET.props.*.w), hiệu ứng và tiếng theo thời gian
+const ETR = {
+  sing: {
+    emo: '🎤', label: 'Hát', status: '🎤 Hát la la la', dur: 5.4, bub: () => '♪',
+    move(d, t, env) {
+      const w = t * 3.4;
+      want.roll = 0.07 * Math.sin(w) * env; want.twist = 0.06 * Math.sin(w + 0.5) * env; want.headRoll = 0.2 * Math.sin(w) * env;
+      want.headPitch = (0.16 + 0.05 * Math.sin(w * 2)) * env; want.crouch = 0.012 * Math.abs(Math.sin(w)) * env;
+      // khe miệng cười không tròn được: khép hàm, đắp miệng chữ "o" nhấp theo từng tiếng "la"
+      want.jaw = 0.04; ET.props.oh.w = sstep(0.1, 0.35, t) * sstep(this.dur, this.dur - 0.3, t);
+      want.armL = (1.0 + 0.55 * Math.sin(w)) * env; want.armR = (1.0 - 0.55 * Math.sin(w)) * env;
+      ET.face.sq = 0.9 * env;
+      d.n ??= 0;
+      if (t > d.n * 0.45 + 0.3 && t < this.dur - 0.6) { d.n++; popEmoji(headTop(0.12), d.n % 2 ? '♪' : '♫'); }
+      if (!d.s2 && t > 2.75) { d.s2 = true; sfx('sing', 1); }
+    },
+  },
+  like: {
+    emo: '👍', label: 'Like', status: '👍 Like mạnh!', dur: 4.2, bub: (d, t) => (t > 0.7 ? '👍' : ''),
+    move(d, t, env) {
+      d.sg ??= etCamSide();
+      const pop = sstep(0.25, 0.7, t) * sstep(this.dur, this.dur - 0.45, t), A = ET.arms[d.sg > 0 ? 1 : 0];
+      etReach(d.sg, 'like', env);
+      A.scW = 1 + 4.4 * pop * (1 + 0.06 * Math.sin(t * 15) * sstep(0.7, 0.9, t) * sstep(1.6, 1.2, t));
+      want.headPitch = 0.16 * env; want.headRoll = -0.12 * d.sg * env; want.roll = -0.04 * d.sg * env; want.jaw = 0.14 * env;
+      if (d.sg > 0) want.armL = 0.2 * env; else want.armR = 0.2 * env;
+      ET.face.sq = 0.88 * env; brain.blushT = Math.max(brain.blushT, 1);
+      if (!d.fx && t > 0.75) {
+        d.fx = true;
+        _ka.setFromMatrixPosition(A.M).addScaledVector(_kb.setFromMatrixColumn(A.M, 1), 0.25);
+        popEmoji(_ka, '✨'); puff(_ka, new THREE.Vector3(0, 0.4, 0), '#fff3a8', 6, 0.01, 0.4, 0.8, 0.1);
+      }
+    },
+  },
+  lixi: {
+    emo: '🧧', label: 'Lì xì', status: '🧧 Khoe lì xì, cười gian', dur: 4.6, bub: () => '🧧',
+    move(d, t, env) {
+      ET.props.env.w = sstep(0.1, 0.3, t) * sstep(this.dur, this.dur - 0.3, t);
+      const flap = sstep(1.5, 1.7, t) * sstep(3.5, 3.3, t);
+      etReach(0, 'chest', env, 0, 0.025 * flap * Math.sin(t * 22), 0);
+      ET.flap = 0.35 * flap * Math.sin(t * 22);
+      want.headYaw = 0.3 * env; want.headRoll = 0.1 * env; want.headPitch = 0.06 * env; want.jaw = 0.16 * env;
+      ET.face.sq = 0.92 * env; brain.blushT = Math.max(brain.blushT, 1);
+      d.n ??= 0;
+      if (t > 0.6 + d.n * 0.5 && t < this.dur - 0.5) { d.n++; popEmoji(etMid(_ka).addScaledVector(ET_UP, 0.08), d.n % 2 ? '✨' : '➕'); }
+      if (!d.s2 && t > 1.5) { d.s2 = true; sfx('lixi', 1); }
+    },
+  },
+  phone: {
+    emo: '📱', label: 'Lướt điện thoại', status: '📱 Ngả lưng lướt điện thoại', dur: 6.5, bub: (d, t) => (d.lol ? '🤭' : '📱'),
+    move(d, t, env) {
+      const k = sstep(0, 0.9, t) * sstep(this.dur, this.dur - 0.8, t);
+      ET.props.phone.w = sstep(0.4, 0.7, t) * sstep(this.dur, this.dur - 0.5, t);
+      // ngả lưng ngồi bệt, giơ điện thoại trước mặt; ngón cái (tay phải) quẹt lên xuống. Không nằm ngửa hẳn được:
+      // trứng cả khối là "đầu" quanh khớp y 0.42, ngửa quá ~0.6 rad thì mặt chĩa lên trời, máy ra sau đỉnh đầu
+      want.pitch = 0.25 * k; want.crouch = 0.06 * k; want.headPitch = 0.18 * k; want.bobAmp = 0; want.snap = 0.8;
+      etReach(0, 'sky', k);
+      etReach(1, 'sky', k, 0, 0.014 * Math.sin(t * 7) * sstep(1, 1.3, t), 0);
+      d.lol = (t > 2.6 && t < 3.3) || (t > 4.6 && t < 5.2);
+      want.jaw = d.lol ? 0.3 + 0.2 * Math.sin(t * 16) : 0.05;
+      ET.face.sq = d.lol ? 0.95 : 0.6;
+      if (d.lol && !d['g' + (t < 4 ? 1 : 2)]) { d['g' + (t < 4 ? 1 : 2)] = true; sfx('giggle', 3); }
+      if (d.lol) brain.blushT = Math.max(brain.blushT, 0.8);
+    },
+  },
+  study: {
+    emo: '📖', label: 'Học bài', status: '📖 Học bài… rồi gật gù', dur: 7.6, bub: (d, t) => (t > 2.7 && t < 5.3 ? '💤' : t >= 5.3 && t < 5.9 ? '‼️' : '📖'),
+    start(d) { const h = rex.heading; d.desk = [rex.x + Math.cos(h) * 0.6, rex.z - Math.sin(h) * 0.6, h]; },
+    move(d, t, env, dt) {
+      ET.props.desk.w = sstep(0, 0.25, t) * sstep(this.dur, this.dur - 0.35, t);
+      want.face = [d.desk[0], d.desk[1]];
+      const doze = sstep(2.7, 3.3, t) * sstep(5.3, 5.2, t), jolt = sstep(5.3, 5.36, t) * sstep(6.0, 5.6, t);
+      want.crouch = 0.07 * env * (1 - 0.6 * jolt); want.pitch = -0.08 * env;
+      // ngủ gật: đầu gục dần rồi giật nảy, dãi chảy, mắt nhắm
+      want.headPitch = (-0.22 - 0.22 * doze - 0.08 * doze * Math.max(0, Math.sin(t * 2.4)) ** 4 + 0.32 * jolt) * env;
+      want.headYaw = 0.12 * Math.sin(t * 1.3) * (1 - doze) * env;
+      want.jaw = 0.12 * doze; ET.face.sq = jolt > 0.3 ? 0.2 : lerp(0.65, 1, doze);
+      ET.props.drool.w = doze;
+      // hai tay đặt hai mép sách
+      const c = Math.cos(d.desk[2]), s = Math.sin(d.desk[2]);
+      for (const sg of [-1, 1]) {
+        _kc.set(d.desk[0] - c * 0.06 + s * sg * 0.12, 0.235, d.desk[1] + s * 0.06 + c * sg * 0.12);
+        etReachAt(sg, _kc, _kd.set(c, -0.4, -s).normalize(), _ke.set(0, 1, 0), env * (1 - 0.7 * jolt));
+      }
+      if (!d.zz && t > 3.4) { d.zz = true; sfx('snore'); }
+      if (!d.up && t > 5.3) {
+        d.up = true; sfx('eek'); popEmoji(headTop(0.1), '‼️');
+        pendingImpulses.push({ mode: 'height', p: [0, 0, 0], r: 0, v: [0, 0.9, 0] }); camShake = Math.max(camShake, 0.3);
+      }
+    },
+  },
+  shower: {
+    emo: '🚿', label: 'Tắm', status: '🚿 Tắm nước lạnh, gào toáng', dur: 5.2, bub: (d, t) => (t > 0.6 ? '😭' : '🚿'),
+    move(d, t, env, dt, tears) {
+      ET.props.shower.w = sstep(this.dur, this.dur - 0.4, t);
+      const k = sstep(0.5, 0.9, t) * sstep(this.dur - 0.3, this.dur - 0.8, t), sob = Math.sin(t * 12);
+      ET.water = k;
+      want.jaw = (0.95 + 0.1 * sob) * k; want.shake = 0.25 * k; want.headPitch = 0.3 * k; want.crouch = (0.02 + 0.01 * sob) * k;
+      want.twist = 0.05 * Math.sin(t * 38) * k;
+      ET.face.sq = 0.5 + 0.45 * k;
+      etReach(0, 'eye', k, 0.008 * Math.sin(t * 9), 0.01 * Math.cos(t * 9), 0);
+      tears(k);
+      // tia nước rơi từ bát sen xuống đầu
+      const S = ET.props.shower.o.position;
+      if (k > 0.05 && dt > 0) for (let i = 0; i < 4; i++) if (Math.random() < dt * 26) {
+        const a = rand(0, 6.28), r = rand(0, 0.055);
+        puff(_ka.set(S.x + Math.cos(a) * r, S.y - 0.01, S.z + Math.sin(a) * r), _kb.set(Math.cos(a) * 0.25, -1.4, Math.sin(a) * 0.25), i % 2 ? '#7cc8ff' : '#b8e6ff', 1, 0.012, 0.05, 0.8, -4);
+      }
+      if (!d.w && t > 0.6) { d.w = true; sfx('roar'); }
+    },
+  },
+  cover: {
+    emo: '🙈', label: 'Che mặt', status: '🙈 Che mặt, hé mắt nhìn trộm', dur: 4.4, bub: (d) => (d.peek > 0.5 ? '🤭' : '🙈'),
+    move(d, t, env) {
+      d.peek = Math.max(sstep(1.4, 1.65, t) * sstep(2.5, 2.25, t), sstep(3.1, 3.25, t) * sstep(3.75, 3.6, t));
+      const p = d.peek;
+      etReach(0, 'cover', env, -0.005 * p, -0.05 * p, 0.05 * p);
+      want.headPitch = (-0.08 + 0.12 * p) * env; want.headRoll = 0.1 * Math.sin(t * 3) * env; want.twist = 0.06 * Math.sin(t * 5) * env;
+      want.jaw = (0.08 + 0.25 * p) * env; ET.face.sq = env * (1 - 0.55 * p);
+      brain.blushT = Math.max(brain.blushT, 2);
+      if (p > 0.5 && !d['p' + (t < 3 ? 1 : 2)]) { d['p' + (t < 3 ? 1 : 2)] = true; sfx('cover'); }
+    },
+  },
+  smug: {
+    emo: '😏', label: 'Cười đểu', status: '😏 Cười đểu, chống nạnh', dur: 4.2, bub: () => '😏',
+    move(d, t, env) {
+      d.sg ??= etCamSide();
+      etReach(d.sg, 'hip', env);
+      if (d.sg > 0) want.armL = 0.25 * env; else want.armR = 0.25 * env;
+      const chuckle = sstep(1.1, 1.3, t) * sstep(2.3, 2.1, t);
+      want.headYaw = -0.3 * d.sg * env; want.headRoll = -0.12 * d.sg * env; want.headPitch = 0.1 * env; want.roll = 0.05 * d.sg * env;
+      want.jaw = (0.13 + 0.06 * chuckle * Math.abs(Math.sin(t * 9))) * env; want.crouch = 0.008 * Math.abs(Math.sin(t * 9)) * chuckle;
+      ET.face.sq = 0.93 * env;
+      if (!d.s2 && t > 1.15) { d.s2 = true; sfx('smug', 1); }
+    },
+  },
+  shy: {
+    emo: '😳', label: 'Ngại ngùng', status: '😳 Ngại ngùng chu môi', dur: 4.6, bub: (d, t) => (t > 1 ? '💋' : '😳'),
+    move(d, t, env) {
+      d.sg ??= etCamSide();
+      // tay phía camera áp má (cho thấy), tay bên kia vòng qua đỉnh đầu
+      etReach(-d.sg, 'head', env, 0.008 * Math.sin(t * 4), 0, 0); etReach(d.sg, 'face', 0.9 * env);
+      brain.blushT = Math.max(brain.blushT, 3);
+      want.roll = 0.06 * Math.sin(t * 2.6) * env; want.twist = 0.12 * Math.sin(t * 2.6 + 0.4) * env;
+      want.headRoll = (-0.18 * d.sg + 0.06 * Math.sin(t * 2.6)) * env; want.headPitch = -0.04 * env;
+      ET.face.sq = env; want.jaw = 0;
+      ET.props.lips.w = sstep(0.6, 0.9, t) * sstep(this.dur, this.dur - 0.4, t);
+      if (!d.k && t > 1.0) { d.k = true; sfx('kiss'); popEmoji(headTop(0.05), '💕'); }
+    },
+  },
+  grumpy: {
+    emo: '😤', label: 'Giận dỗi', status: '😤 Giận dỗi, khoanh tay quay đi', dur: 4.6, bub: () => '😤',
+    move(d, t, env) {
+      etReach(1, 'cross', env); etReach(-1, 'cross2', env);
+      // quay đi lệch hẳn khỏi camera (~100°), không thèm nhìn
+      d.s ??= Math.random() < 0.5 ? 1 : -1;
+      const a = camYaw() + 1.75 * d.s;
+      want.face = [rex.x + Math.cos(a), rex.z - Math.sin(a)];
+      // quay chậm hơn mặc định (1.3 rad/s): xoay tại chỗ nhanh thì hàng ô đáy bị vặn xoắn giữa hai chân đang ghim
+      want.turnRate = clamp(wrapAngle(a - rex.heading) * 1.5, -0.8, 0.8);
+      want.headPitch = -0.07 * env; want.headRoll = 0.08 * d.s * env; want.jaw = 0; ET.face.sq = 0.8 * env;
+      ET.props.hdrum.w = sstep(0.2, 0.45, t) * sstep(this.dur, this.dur - 0.4, t);
+      if (!d.p && t > 0.5) { d.p = true; popEmoji(headTop(0.1), '💢'); }
+      if (!d.h2 && t > 2.4) { d.h2 = true; sfx('hmph'); popEmoji(headTop(0.1), '💢'); }
+    },
+  },
+  confused: {
+    emo: '❓', label: 'Ngơ ngác', status: '❓ Ngơ ngác, chảy cả dãi', dur: 4.4, bub: () => '❓',
+    move(d, t, env, dt) {
+      d.sg ??= etCamSide();
+      want.headRoll = 0.3 * d.sg * env; want.headYaw = 0.1 * Math.sin(t * 0.9) * env; want.headPitch = 0.05 * env;
+      etReach(d.sg, 'head', env, 0.014 * Math.sin(t * 16), 0.006 * Math.sin(t * 16), 0);
+      want.jaw = 0.2 * env; ET.face.sq = 0.5;
+      ET.props.drool.w = sstep(0.8, 1.5, t) * sstep(this.dur, this.dur - 0.3, t);
+      if (ET.props.drool.s > 0.6 && dt > 0 && Math.random() < dt * 1.2) puff(_ka.copy(ET.props.drool.o.position).addScaledVector(ET_UP, -0.04), _kb.set(0, -0.2, 0), '#cdeeff', 1, 0.007, 0.02, 0.6, -3);
+      if (!d.q && t > 0.2) { d.q = true; popEmoji(headTop(0.12), '❓'); }
+      if (!d.q2 && t > 2.3) { d.q2 = true; popEmoji(headTop(0.12), '❔'); sfx('confused', 1); }
+    },
+  },
+  flat: {
+    emo: '🫠', label: 'Nằm ẹp', status: '🫠 Nằm ẹp như bánh dày', dur: 4.6, bub: () => '🫠',
+    move(d, t, env) {
+      const k = sstep(0, 1.0, t) * sstep(this.dur, this.dur - 0.7, t);
+      want.crouch = 0.26 * k; want.headPitch = -0.05 * k; want.bobAmp = 0; want.snap = 0.7; want.breathe = 0.006 * k;
+      want.armL = want.armR = 0.7 * k; want.jaw = 0.03; ET.face.sq = 0.85 * k + 0.5 * (1 - k);
+    },
+  },
+};
+// điểm đặt tay, đồ vật, nét mặt do updateBrain (ăn, ôm bóng) và adjust ghi trong khung; dùng xong ở post thì xoá
+// để trạng thái sau không kế thừa (lúc tạm dừng giữ nguyên cho tư thế đứng yên)
+function etReset(dt) {
+  if (!(dt > 0)) return;
+  for (const A of ET.arms) { A.want.w = 0; A.scW = 1; }
+  for (const n in ET.props) ET.props[n].w = 0;
+  ET.face.sq = 0.5; ET.water = 0;
+}
+function startTrick(kind) {
+  if (CHAR.id !== 'egg' || !ETR[kind]) return;
+  const d = { kind };
+  ETR[kind].start?.(d);
+  setState('trick', d);
+  sfx(kind);
+}
+function etTrick(dt, tears) {
+  const d = brain.d, T = ETR[d.kind], t = brain.t, env = sstep(0, 0.4, t) * sstep(T.dur, T.dur - 0.5, t);
+  T.move(d, t, env, dt, tears);
+  if (t > T.dur) setState(idleState());
+}
+if (CHAR.id === 'egg') {
+  etBuild();
+  CALM.add('trick'); NEW_ACTIONS.add('trick');
+  Object.defineProperty(STATE_TEXT, 'trick', { get: () => ETR[brain.d.kind]?.status ?? '', enumerable: true });
+  $('#egg-tricks').hidden = false;
+  const btns = $$('[data-egg]');
+  btns.forEach((b) => b.addEventListener('click', () => trigger('trick:' + b.dataset.egg)));
+  new MutationObserver(() => {
+    const cur = brain.state === 'trick' ? brain.d.kind : '';
+    btns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.egg === cur)));
+  }).observe(statusEl, { childList: true, characterData: true, subtree: true });
 }
 
 // ------------------------------------------------------------------ character setup
