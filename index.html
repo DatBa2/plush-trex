@@ -2744,45 +2744,48 @@ const ACC_ANCHORS = {
     bunny: { c: [0.348, 0.89, 0], span: 1.2 },
     beanie: { c: [0.475, 0.9, 0], ray: [0.112, 0.075, 0.03, 0.17], apex: [0.462, 1.1, 0], top: [0.45, 0.95, 0] },
     phones: { c: [0.4, 0.9, 0], span: 1.15, top: [0.4, 0.95, 0] },
-    glasses: { R: 0.05, arch: 0.01 },
+    // aim = [trọng số hướng nhìn của mắt, trọng số hướng thẳng trước] cho mặt tròng kính
+    glasses: { R: 0.05, arch: 0.01, aim: [0.62, 0.38] },
     bandana: { c: [0.255, 0.70, 0], a: [0.669, 0.743, 0], f: [0.743, -0.669], w: 0.022, r: [0.205, 0.19], H: 0.07, span: 0.68 },
     bowtie: { at: [0.25, 0.598, 0], dir: [1, -0.12, 0], up: (n) => [-n[0] * n[1], 1 - n[1] * n[1], -n[2] * n[1]], gap: -0.002 },
-    backpack: { o: [0.07, 0.62, 0.02], dir: [-0.22, 1, 0.56], strap: [0.17, 0.62, 0], D: [[-0.3, 1, 0.42], [0.15, 0.75, 0.8], [0.75, 0.25, 0.62], [0.95, -0.35, 0.42]], ridge: [1.0, 0.6], top: [0.06, 0.7, 0] },
+    // x = hướng chiều dài túi (về phía đầu dọc theo lưng)
+    backpack: { x: [1, 0, 0], o: [0.07, 0.62, 0.02], dir: [-0.22, 1, 0.56], strap: [0.17, 0.62, 0], D: [[-0.3, 1, 0.42], [0.15, 0.75, 0.8], [0.75, 0.25, 0.62], [0.95, -0.35, 0.42]], ridge: [1.0, 0.6], top: [0.06, 0.7, 0] },
     drumstick: { at: [0.45, 0.95, 0], dir: [0, 1, 0], up: () => [0.08, 1, 0], yaw: 1.3, gap: -0.006 },
     tag: { at: [-0.3, 0.46, 0], dir: [0, -1, 0.4] },
     // H = điểm trong đầu để bắn tia, open = nửa góc nón chừa mặt quanh hướng +x, t = góc (trước → đỉnh → gáy) phủ vải, knot = hướng nút buộc,
     // via = hướng điểm dải buộc đi qua (z lấy theo bên)
     scarf: { H: [0.42, 0.86, 0], open: 0.98, t: [-0.45, 3.3], knot: [-0.2, -1, 0] },
-    shades: { R: 0.046 },
+    shades: { R: 0.046, aim: [0.62, 0.38] },
     bouquet: { s: 0.9 },
   },
-  // Vịt: mọi chỗ gắn tính từ tâm đầu H (lùi sau giữa hai mắt) và bán kính đầu r đo bằng tia ngang, nên tự theo khi đầu đổi cỡ.
-  // Chỏm lông mảnh giữa đỉnh đầu: mũ tiệc và đùi gà nghiêng hai bên chỏm cho nhìn chính diện vẫn thấy, vương miện ôm quanh chỏm, mũ len trùm kín
+  // Vịt: đầu tròn liền thân, không cổ. Mọi chỗ gắn tính từ tâm đầu H (dưới mốc đỉnh đầu L.crown, ngang tầm mắt), bán kính đầu r đo bằng tia
+  // và vòng cổ N ở eo giữa đầu và thân, nên tự theo khi đầu đổi cỡ. Đầu to nên đồ đội đầu phóng to; bó hoa nắm trong bàn tay tròn L.paw
   duck: (L) => {
-    const e = L.eye.c, H = [e[0] - 0.1, e[1] - 0.03, 0], r = restSDF.castOut(H, [0, 0, 1]).p[2];
+    const C = L.crown || [L.eye.c[0] - 0.17, L.eye.c[1] + 0.17, 0], H = [C[0], L.eye.c[1] - 0.03, 0], r = restSDF.castOut(H, [0, 0, 1]).p[2];
     const at = (dx, dy, dz = 0) => [H[0] + dx * r, H[1] + dy * r, dz * r];
-    const tail = L.tail ? L.tail[0] : at(-2.2, -2);
+    const N = at(-0.07, -0.8), paw = L.paw || { c: [N[0], N[1] - 0.17, 1.2 * r], r: 0.05 };
     return {
       wear: ['scarf'],
-      bow: { at: H, dir: [0, 0.6, 0.8] },
-      flower: { at: H, dir: [0.05, 0.5, 1] },
-      hat: { at: at(-0.15, 0, 0.45), dir: [0, 1, 0.3], up: () => [-0.05, 1, 0.42] },
-      crown: { at: at(-0.13, 0, 0.32), dir: [0, 1, 0], shift: [0, 0, -0.32 * r], up: () => [0, 1, 0.06], s: 1.1 },
-      wreath: { c: at(0, 0.05), ray: [0.13, 0.1, 0.14], top: H },
-      horn: { at: at(0.35, 0.25), dir: [0.45, 1, 0], up: () => [0.5, 1, 0] },
-      halo: { top: H, h: 0.05 },
-      bunny: { c: at(-0.75, 0), span: 1.2 },
-      beanie: { c: H, ray: [0.12, 0.075, 0.03, 0.14], apex: at(-0.08, 1.45), top: H },
-      phones: { c: at(-0.7, 0), cup: at(-0.4, 0), span: 1.15, top: at(-0.7, 0) },
-      glasses: { R: 0.055, arch: 0.012, top: at(0.4, 0) },
-      bandana: { c: at(-0.19, -1.05), a: [0.346, 0.938, 0], f: [0.938, -0.346], w: 0.02, r: [1.05 * r, 0.97 * r], H: 0.065, span: 0.68 },
-      bowtie: { at: at(-0.13, -1.26), dir: [1, -0.25, 0] },
-      backpack: { o: at(-1.03, -1.58, 0.1), dir: [-0.5, 1, 0.5], strap: at(-0.71, -1.68), D: [[-0.4, 1, 0.4], [0, 0.8, 0.8], [0.6, 0.3, 0.75], [0.9, -0.3, 0.45]], ridge: [H[1], H[1] - 2.6 * r], top: at(-1.18, -1.32) },
-      drumstick: { at: at(-0.1, 0, -0.48), dir: [0, 1, -0.3], up: () => [0, 1, -0.38], yaw: -1.04, s: 1.1 },
-      tag: { at: [tail[0] + 0.05, tail[1] - 0.05, 0], dir: [-0.3, -1, 0.4] },
-      scarf: { H, open: 1.0, t: [-0.75, 3.85], knot: [0.35, -1, 0] },
-      shades: { R: 0.062 },
-      bouquet: { s: 1.4 },
+      bow: { at: H, dir: [0.2, 0.7, 0.75], s: 1.3 },
+      flower: { at: H, dir: [0.25, 0.5, 1], s: 1.3 },
+      hat: { at: H, dir: [0.1, 1, 0], up: () => [0.1, 1, 0.04], s: 1.3 },
+      crown: { at: H, dir: [0, 1, 0], up: () => [0.06, 1, 0], s: 1.35 },
+      wreath: { c: H, ray: [0.13, 0.12, 0.14], top: H, s: 1.25 },
+      horn: { at: H, dir: [0.45, 1, 0], up: () => [0.45, 1, 0], s: 1.25 },
+      halo: { top: H, h: 0.09, s: 1.45 },
+      bunny: { c: at(-0.1, 0), span: 1.15, s: 1.3 },
+      beanie: { c: H, ray: [0.12, 0.08, 0.03, 0.13], apex: at(-0.05, 1.12), top: H },
+      phones: { c: H, cup: at(0, -0.1), span: 1.15, top: H, s: 1.3 },
+      // mắt hạt nhỏ nằm xa nhau hai bên mặt: mặt tròng quay về phía trước nhiều hơn để kính không chĩa ra hai bên
+      glasses: { R: 0.05, arch: 0.012, top: at(0.4, 0), aim: [0.35, 0.65] },
+      shades: { R: 0.056, aim: [0.35, 0.65] },
+      bandana: { c: N, a: [0.2, 0.98, 0], f: [0.98, -0.2], w: 0.02, r: [1.1 * r, 1.03 * r], H: 0.07, span: 0.7 },
+      bowtie: { at: N, dir: [1, -0.1, 0], s: 1.25 },
+      backpack: { x: [0, 1, 0], o: [N[0] - 0.05, N[1] - 0.045, 0.02], dir: [-1, 0.05, 0.35], strap: [N[0] - 0.03, N[1] - 0.095, 0], D: [[-0.8, 0.45, 0.3], [-0.35, 0.4, 0.85], [0.35, 0.25, 0.9], [0.85, -0.15, 0.5]], ridge: [N[1] + 0.09, N[1] + 0.09], top: [N[0] - 0.2, N[1], 0], s: 1.3 },
+      drumstick: { at: H, dir: [0, 1, 0], up: () => [0.05, 1, 0], yaw: 1.3, s: 1.35 },
+      tag: { at: [N[0] - 0.15, N[1] - 0.215, 0], dir: [-1, -0.6, 0.3] },
+      scarf: { H, open: 1.0, t: [-0.75, 3.85], knot: [1, -0.9, 0] },
+      bouquet: { s: 1.3, at: [paw.c[0] + 0.3 * paw.r, paw.c[1] + 0.2 * paw.r, paw.c[2]] },
     };
   },
   // đầu là cả nửa trên cục bông nên đồ đội đầu phóng to; không có cổ nên khăn/nơ cổ quàng ngay dưới cằm
@@ -3113,7 +3116,7 @@ addAcc('horn', (() => {
   const F = accFit('glasses'), parts = [], inner = [], R = F.R, rim = '#d9d9d9';
   for (const s of [1, -1]) {
     const c = V3([LM.eye.c[0], LM.eye.c[1], LM.eye.c[2] * s]);
-    const ax = V3([LM.eye.n[0], LM.eye.n[1], LM.eye.n[2] * s]).multiplyScalar(0.62).add(V3([0.38, 0.06, 0])).normalize();
+    const ax = V3([LM.eye.n[0], LM.eye.n[1], LM.eye.n[2] * s]).multiplyScalar(F.aim[0]).add(V3([F.aim[1], 0.06, 0])).normalize();
     const u = V3([0, 1, 0]).addScaledVector(ax, -ax.y).normalize(), v = new THREE.Vector3().crossVectors(ax, u);
     const ring = (t) => Array.from({ length: 28 }, (_, i) => c.clone().addScaledVector(ax, t).addScaledVector(u, Math.cos(i / 28 * Math.PI * 2) * R).addScaledVector(v, Math.sin(i / 28 * Math.PI * 2) * R));
     let t = 0.01, pts = ring(t);
@@ -3168,7 +3171,7 @@ addAcc('bowtie', (() => {
   const F = accFit('backpack'), k = F.s, parts = [], top = [], straps = [];
   for (const s of [1, -1]) {
     const S = restSDF.castOut([F.o[0], F.o[1], F.o[2] * s], [F.dir[0], F.dir[1], F.dir[2] * s]), n = V3(S.n);
-    const X = V3([1, 0, 0]).addScaledVector(n, -n.x).normalize(), Z = new THREE.Vector3().crossVectors(X, n);
+    const X = V3(F.x).addScaledVector(n, -n.dot(V3(F.x))).normalize(), Z = new THREE.Vector3().crossVectors(X, n);
     const B = (u, h, w) => M4().makeBasis(X, n, Z).setPosition(V3(S.p).addScaledVector(X, u * k).addScaledVector(n, h * k).addScaledVector(Z, w * k));
     const pocket = blob(0.056 * k, 0.034 * k, 0.04 * k, 0.55).applyMatrix4(B(0, 0.022, 0)), pp = pocket.attributes.position;
     // đáy túi ôm theo lưng tròn
@@ -3272,7 +3275,7 @@ addAcc('drumstick', (() => {
   const F = accFit('shades'), R = F.R, frame = [], lens = [], inner = [];
   for (const s of [1, -1]) {
     const c = V3([LM.eye.c[0], LM.eye.c[1], LM.eye.c[2] * s]);
-    const ax = V3([LM.eye.n[0], LM.eye.n[1], LM.eye.n[2] * s]).multiplyScalar(0.62).add(V3([0.38, 0.06, 0])).normalize();
+    const ax = V3([LM.eye.n[0], LM.eye.n[1], LM.eye.n[2] * s]).multiplyScalar(F.aim[0]).add(V3([F.aim[1], 0.06, 0])).normalize();
     const u = V3([0, 1, 0]).addScaledVector(ax, -ax.y).normalize(), v = new THREE.Vector3().crossVectors(ax, u);
     // v hướng ra thái dương ở cả hai bên
     if (v.z * s < 0) v.negate();
@@ -3329,7 +3332,8 @@ addAcc('drumstick', (() => {
   for (const a of [0.3, 2.4, 4.4]) parts.push([blob(0.006, 0.05, 0.012, 0.9, 12, 10), M4().makeRotationY(a).multiply(M4().makeTranslation(0.012, 0.045, 0)).multiply(M4().makeRotationZ(-0.25)), '#7dba5c', 0]);
   parts.push([new THREE.TorusGeometry(0.0115, 0.0032, 8, 24).rotateX(Math.PI / 2), M4().makeTranslation(0, 0.004, 0), '#d8b585', 0], [new THREE.TorusGeometry(0.0118, 0.0032, 8, 24).rotateX(Math.PI / 2), M4().makeTranslation(0, -0.004, 0), '#d8b585', 0]);
   const g = mergeGeos(parts).scale(k, k, k);
-  const n = V3([mn[hv * 3], mn[hv * 3 + 1], mn[hv * 3 + 2]]), at = V3([mp[hv * 3], mp[hv * 3 + 1], mp[hv * 3 + 2]]).addScaledVector(n, 0.012 * k);
+  // bàn tay tròn (vịt) cho sẵn điểm nắm `at` trong lòng bàn tay: cuống hoa xuyên qua tay như đang nắm
+  const n = V3([mn[hv * 3], mn[hv * 3 + 1], mn[hv * 3 + 2]]), at = F.at ? V3(F.at) : V3([mp[hv * 3], mp[hv * 3 + 1], mp[hv * 3 + 2]]).addScaledVector(n, 0.012 * k);
   const up = V3([0.2, 1, 0.35]).normalize();
   addPiece('bouquet', g, at.toArray(), { frame: 'hand', q: new THREE.Quaternion().setFromUnitVectors(Y_AXIS, up), up: up.toArray(), wob: [0.1 * k, 10, 0.2, 0.35, 0.8, 0.25] });
 }
